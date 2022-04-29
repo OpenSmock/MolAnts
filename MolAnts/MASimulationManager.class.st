@@ -28,8 +28,9 @@ MASimulationManager class >> startSimulation [
 MASimulationManager >> componentActivate [ 
 
 	super componentActivate.
+	self getTMAStateEventsSubscriber subscribe: self.
+	
 	ground := MAGround start. 
-
 	self start.
 ]
 
@@ -55,6 +56,8 @@ MASimulationManager >> componentPassivate [
 { #category : #private }
 MASimulationManager >> createAntHill [
 
+	self isAntHillCreated: true.
+
 	"Create x ants"
 	1 to: 50 do:[ :e | | ant name |
 		"Create Ant"
@@ -70,11 +73,7 @@ MASimulationManager >> createAntHill [
 		self getTMASimulationEventsNotifier antBorn: ant.
 	].
 
-	self flag:'PLA : deux bugs à résoudre, ne pas tenir compte de lordre entre addProducer and subscribe + pouvoir relancer la simulation après un Stop'.
-	self getTMAStateEventsSubscriber subscribe: self.
-	ground getTMAPositionEventsSubscriber subscribe: ground.
 	
-	self isAntHillCreated: true.
 ]
 
 { #category : #'component accessing' }
@@ -111,7 +110,6 @@ MASimulationManager >> pause [
 
 	self isRunning ifFalse:[^self].
 	self pauseSimulationLoop.
-
 	isRunning := false.
 	self getTMASimulationEventsNotifier paused.
 ]
@@ -132,8 +130,6 @@ MASimulationManager >> removeAntHill [
 		name := ('Ant', e printString) asSymbol.
 		MAAnt stop: name.
 	].
-
-	self flag:'PLA : il faut corriger le problème de déclaration des providers pour pouvoir refaire un play derrière'.
 	
 	self isAntHillCreated: false.
 ]
@@ -142,11 +138,9 @@ MASimulationManager >> removeAntHill [
 MASimulationManager >> start [
 
 	self isRunning ifTrue:[^self].
-
 	self isAntHillCreated ifFalse:[self createAntHill].
 
 	self startSimulationLoop.
-
 	isRunning := true.
 	self getTMASimulationEventsNotifier started.
 ]
@@ -180,9 +174,7 @@ MASimulationManager >> stateChanged: aSymbol for: aModelObject [
 MASimulationManager >> stop [
 
 	self stopSimulationLoop.
-
 	self isAntHillCreated ifTrue:[	self removeAntHill ].
-
 	isRunning := false.
 	self getTMASimulationEventsNotifier stopped.
 ]

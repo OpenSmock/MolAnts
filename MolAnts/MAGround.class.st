@@ -33,6 +33,7 @@ MAGround >> antDead: anAnt [
 MAGround >> componentActivate [
 	
 	self getTMASimulationEventsSubscriber subscribe: self.
+	self getTMAPositionEventsSubscriber subscribe: self.
 	
 	self openInNewSpace.
 ]

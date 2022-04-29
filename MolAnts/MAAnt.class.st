@@ -25,7 +25,7 @@ MAAnt >> componentInitialize [
 	
 	self state: #egg.
 
-	eggStateDurationInMs := (Random new next * 10000) rounded + 10000.
+	eggStateDurationInMs := (Random new next * 10000) rounded + 1000.
 	adultStateDurationInMs := (Random new next * 50000) rounded + 50000.
 	ageInMs := 0.
 ]
