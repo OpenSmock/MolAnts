@@ -16,3 +16,9 @@ MolAnts require Molecule (https://github.com/OpenSmock/Molecule) for the compone
   
 ## Overview of the Components, Types, Services and Events organisation with Molecule
 ![MolAnts](https://user-images.githubusercontent.com/64481702/166678508-2be44458-5095-4cd3-b772-d144f2707f6c.png)
+
+## MolAnts : an example usage of Molecule
+
+### Declaration of Type traits
+
+``` Trait named: #TMAAntsType uses: MolComponentType ````
