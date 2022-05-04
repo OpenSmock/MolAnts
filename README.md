@@ -21,4 +21,6 @@ MolAnts require Molecule (https://github.com/OpenSmock/Molecule) for the compone
 
 ### Declaration of Type traits
 
-``` Trait named: #TMAAntsType uses: MolComponentType ````
+```smallTalk
+Trait named: #TMAAntsType uses: MolComponentType 
+```
