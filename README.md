@@ -19,35 +19,44 @@ MolAnts require Molecule (https://github.com/OpenSmock/Molecule) for the compone
 
 ## MolAnts : an example usage of Molecule
 
-### Declaration of Type traits
+### Declaration of classes and trats to get the MolAnts architecture
 
 ```smallTalk
 Object subclass: #MAAnt uses: MolComponentImpl + TMAAntsType.
+
 Trait named: #TMAAntsType uses: MolComponentType.
-TMASimulationManagerType class>>producedComponentEvents
+
+TMAAntsType class>>producedComponentEvents
   <componentContract>
-  ↑{ TMAPositionEvents . TMAStateEvents }
-TMASimulationManagerType class>>consumedComponentEvents
+  ^{ TMAPositionEvents . TMAStateEvents }
+  
+TMAAntsType class>>consumedComponentEvents
   <componentContract>
-  ↑{ TMASimulationEvents }
+  ^{ TMASimulationEvents }
 
 BlElement subclass: #MAGround uses: MolComponentImpl + TMAGroundType.
+
 Trait named: #TMAGroundType uses: MolComponentType.
-TMASimulationManagerType class>>consumedComponentEvents
+
+TMAGroundType class>>consumedComponentEvents
   <componentContract>
-  ↑{ TMAPositionEvents . TMASimulationEvents }
+  ^{ TMAPositionEvents . TMASimulationEvents }
   
 MolAbstractComponentImpl subclass: #MASimulationManager uses: TMASimulationManagerType.
+
 Trait named: #TMASimulationManagerType uses: MolComponentType.
+
 TMASimulationManagerType class>>providedComponentServices
   <componentContract>
-  ↑{ TMASimulationServices }
+  ^{ TMASimulationServices }
+  
 TMASimulationManagerType class>>producedComponentEvents
   <componentContract>
-  ↑{ TMASimulationEvents }
+  ^{ TMASimulationEvents }
+  
 TMASimulationManagerType class>>consumedComponentEvents
   <componentContract>
-  ↑{ TMAStateEvents }
+  ^{ TMAStateEvents }
 
 Trait named: #TMAPositionEvents	uses: MolComponentEvents.
 
