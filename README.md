@@ -4,7 +4,9 @@ Ants version Molecule
 
 ## Getting Started
 
-### Installing Molecule
+### Installing MolAnts
+
+Add the repository directly in Pharo thanks to the Iceberg.
 
 Pharo 8, Pharo 9 and Pharo 10 : 
 
