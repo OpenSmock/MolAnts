@@ -22,5 +22,32 @@ MolAnts require Molecule (https://github.com/OpenSmock/Molecule) for the compone
 ### Declaration of Type traits
 
 ```smallTalk
-Trait named: #TMAAntsType uses: MolComponentType 
+Trait named: #TMAAntsType uses: MolComponentType .
+
+Trait named: #TMAGroundType uses: MolComponentType.
+  
+Trait named: #TMASimulationManagerType uses: MolComponentType.
+```
+### Declaration of Components
+
+```smallTalk
+Object subclass: #MAAnt uses: MolComponentImpl + TMAAntsType.
+
+BlElement subclass: #MAGround uses: MolComponentImpl + TMAGroundType.
+  
+MolAbstractComponentImpl subclass: #MASimulationManager uses: TMASimulationManagerType.
+```
+### Declaration of Event traits
+
+```smallTalk
+Trait named: #TMAPositionEvents	uses: MolComponentEvents.
+
+Trait named: #TMASimulationEvents	uses: MolComponentEvents.
+  
+Trait named: #TMAStateEvents uses: MolComponentEvents.
+```
+### Declaration of Service traits
+
+```smallTalk
+Trait named: #TMASimulationServices uses: MolComponentServices.
 ```
