@@ -22,7 +22,7 @@ MolAnts require Molecule (https://github.com/OpenSmock/Molecule) for the compone
 ### Declaration of Type traits
 
 ```smallTalk
-Trait named: #TMAAntsType uses: MolComponentType .
+Trait named: #TMAAntsType uses: MolComponentType.
 
 Trait named: #TMAGroundType uses: MolComponentType.
   
@@ -42,7 +42,7 @@ MolAbstractComponentImpl subclass: #MASimulationManager uses: TMASimulationManag
 ```smallTalk
 Trait named: #TMAPositionEvents	uses: MolComponentEvents.
 
-Trait named: #TMASimulationEvents	uses: MolComponentEvents.
+Trait named: #TMASimulationEvents uses: MolComponentEvents.
   
 Trait named: #TMAStateEvents uses: MolComponentEvents.
 ```
