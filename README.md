@@ -19,7 +19,7 @@ MolAnts require Molecule (https://github.com/OpenSmock/Molecule) for the compone
 
 ## MolAnts : an example usage of Molecule
 
-### Declaration of classes and trats to get the MolAnts architecture
+### Declaration of classes and traits to get the MolAnts architecture
 
 ```smallTalk
 Object subclass: #MAAnt uses: MolComponentImpl + TMAAntsType.
