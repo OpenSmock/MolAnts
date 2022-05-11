@@ -1,8 +1,8 @@
 Class {
 	#name : #MASimulationManager,
 	#superclass : #MolAbstractComponentImpl,
-	#traits : 'TMASimulationManagerType + TMAStateEvents + TMASimulationServices',
-	#classTraits : 'TMASimulationManagerType classTrait + TMAStateEvents classTrait + TMASimulationServices classTrait',
+	#traits : 'TMASimulationManagerType + TMAStageEvents + TMASimulationServices',
+	#classTraits : 'TMASimulationManagerType classTrait + TMAStageEvents classTrait + TMASimulationServices classTrait',
 	#instVars : [
 		'simulationThread',
 		'ground',
@@ -28,7 +28,7 @@ MASimulationManager class >> startSimulation [
 MASimulationManager >> componentActivate [ 
 
 	super componentActivate.
-	self getTMAStateEventsSubscriber subscribe: self.
+	self getTMAStageEventsSubscriber subscribe: self.
 	
 	ground := MAGround start. 
 	self start.
@@ -45,7 +45,7 @@ MASimulationManager >> componentInitialize [
 { #category : #'component life cycle' }
 MASimulationManager >> componentPassivate [
 
-	self getTMAStateEventsSubscriber unsubscribe: self.
+	self getTMAStageEventsSubscriber unsubscribe: self.
 
 	self stop.
 
@@ -64,9 +64,9 @@ MASimulationManager >> createAntHill [
 		name := ('Ant', e printString) asSymbol.
 		ant := MAAnt start: name.
 		ant position: 200@200.
-
+		
 		"Adding events producer into SimulationMManager and Ground"
-		self forEvents: TMAStateEvents addProducer: name. 
+		self forEvents: TMAStageEvents addProducer: (ant getStage componentName). 
 		ground forEvents: TMAPositionEvents addProducer: name.
 		
 		"Notify Ant creation"
@@ -82,14 +82,14 @@ MASimulationManager >> getTMASimulationEventsNotifier [
 ]
 
 { #category : #'component accessing' }
-MASimulationManager >> getTMAStateEventsSubscriber [
+MASimulationManager >> getTMAStageEventsSubscriber [
 	| eventsSymbol eventsSubscriber itf |
-	itf := TMAStateEvents.
+	itf := TMAStageEvents.
 	eventsSymbol := self eventsSubscribers at: itf ifAbsent: [^MolNotFoundEventsSubscriber new interface: itf name: nil].
 	eventsSymbol isCollection
 	 	ifTrue: 
 			[eventsSubscriber := MolComponentManager default locatorServices 
-						searchEventsSubscriberFor: TMAStateEvents named: eventsSymbol ]. 
+						searchEventsSubscriberFor: TMAStageEvents named: eventsSymbol ]. 
 	^eventsSubscriber
 ]
 
@@ -134,6 +134,14 @@ MASimulationManager >> removeAntHill [
 	self isAntHillCreated: false.
 ]
 
+{ #category : #events }
+MASimulationManager >> stageNameChanged: aSymbol for: aModelObject [
+
+	aSymbol = #dead ifFalse:[^self].
+	
+	self getTMASimulationEventsNotifier antDead: aModelObject.
+]
+
 { #category : #services }
 MASimulationManager >> start [
 
@@ -160,14 +168,6 @@ MASimulationManager >> startSimulationLoop [
 	].
 	
 	simulationThread resume.
-]
-
-{ #category : #events }
-MASimulationManager >> stateChanged: aSymbol for: aModelObject [
-
-	aSymbol = #dead ifFalse:[^self].
-	
-	self getTMASimulationEventsNotifier antDead: aModelObject.
 ]
 
 { #category : #services }

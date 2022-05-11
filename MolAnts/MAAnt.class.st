@@ -1,21 +1,18 @@
 Class {
 	#name : #MAAnt,
 	#superclass : #Object,
-	#traits : 'MolComponentImpl + TMAAntsType + TMASimulationServices + TMASimulationEvents',
-	#classTraits : 'MolComponentImpl classTrait + TMAAntsType classTrait + TMASimulationServices classTrait + TMASimulationEvents classTrait',
+	#traits : 'MolComponentImpl + TMAAntsType + TMASimulationServices + TMASimulationEvents + TMAAntServices',
+	#classTraits : 'MolComponentImpl classTrait + TMAAntsType classTrait + TMASimulationServices classTrait + TMASimulationEvents classTrait + TMAAntServices classTrait',
 	#instVars : [
 		'position',
-		'state',
-		'ageInMs',
-		'eggStateDurationInMs',
-		'adultStateDurationInMs'
+		'ageInMs'
 	],
 	#category : #'MolAnts-Model'
 }
 
 { #category : #'life cycle' }
 MAAnt >> componentActivate [
-	
+		
 	self getTMASimulationEventsSubscriber subscribe: self.
 ]
 
@@ -23,40 +20,34 @@ MAAnt >> componentActivate [
 MAAnt >> componentInitialize [
 	"here write the code corresponding to component initialisation phase"
 	
-	self state: #egg.
+	self initializeStage.
+	
+	self forServices: TMAStageServices useProvider: (#stage, self componentName asSymbol) asSymbol.
 
-	eggStateDurationInMs := (Random new next * 10000) rounded + 1000.
-	adultStateDurationInMs := (Random new next * 50000) rounded + 50000.
 	ageInMs := 0.
 ]
 
 { #category : #'life cycle' }
 MAAnt >> componentPassivate [
-	
+		
 	self getTMASimulationEventsSubscriber unsubscribe: self.
 	
 ]
 
-{ #category : #private }
-MAAnt >> computeState [
-
-	self state = #egg ifTrue:[
-		ageInMs > eggStateDurationInMs ifTrue:[ self state: #adult ].
-		^self	
-	].
-
-	self state = #adult ifTrue:[
-		ageInMs > adultStateDurationInMs ifTrue:[ self state: #dead ].
-		^self	
-	].
+{ #category : #'life cycle' }
+MAAnt >> componentRemove [
+	"here write the code corresponding to component remove phase"
+	
+	self removeStage.
 ]
 
 { #category : #private }
 MAAnt >> doSimulationStep [
 
 	ageInMs := ageInMs + MASimulationManager simulationStepDurationInMs.
-	self computeState.
-	self move.
+	self getStage doSimulationStepFor: self.
+	
+	self position: (self getStage moveFrom: self position).  
 ]
 
 { #category : #'component accessing' }
@@ -77,16 +68,21 @@ MAAnt >> getTMASimulationEventsSubscriber [
 ]
 
 { #category : #'component accessing' }
-MAAnt >> getTMAStateEventsNotifier [
-	^self eventsNotifiers at: TMAStateEvents ifAbsent: [^MolNotFoundEventsNotifier new interface: TMAStateEvents name: nil].
+MAAnt >> getTMAStageServicesProvider [
+	| servicesSymbol servicesProvider itf |
+	itf := TMAStageServices.
+	servicesSymbol := self servicesProviders at: itf ifAbsent: [^MolNotFoundServicesProvider new interface: itf name: nil].
+	servicesSymbol isSymbol
+	 	ifTrue: 
+			[servicesProvider := MolComponentManager default locatorServices 
+						searchServicesProviderFor: TMAStageServices named: servicesSymbol]. 
+	^servicesProvider
 ]
 
-{ #category : #private }
-MAAnt >> move [
+{ #category : #stage }
+MAAnt >> initializeStage [
 
-	self state ~= #adult ifTrue:[^self].
-	
-	self position: (self position + (((Random new next * 10 - 5) rounded) @ ((Random new next * 10 - 5) rounded))).
+	MAStage start: (#stage, self componentName asSymbol) asSymbol
 ]
 
 { #category : #accessing }
@@ -105,22 +101,14 @@ MAAnt >> position: aPoint [
 	
 ]
 
+{ #category : #stage }
+MAAnt >> removeStage [
+
+	MAStage stop: (#stage, self componentName asSymbol) asSymbol
+]
+
 { #category : #'events - lifecycle' }
 MAAnt >> simulationStepSent [
 
 	self doSimulationStep.
-]
-
-{ #category : #accessing }
-MAAnt >> state [
-
-	^ state
-]
-
-{ #category : #accessing }
-MAAnt >> state: anObject [
-
-	state ~= anObject ifFalse:[^self].
-	state := anObject.
-	self getTMAStateEventsNotifier stateChanged: state for: self.
 ]

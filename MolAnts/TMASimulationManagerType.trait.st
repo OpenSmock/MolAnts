@@ -8,7 +8,7 @@ Trait {
 { #category : #'accessing - events' }
 TMASimulationManagerType classSide >> consumedComponentEvents [
 	<componentContract>
-	^ {TMAStateEvents }
+	^ {TMAStageEvents }
 ]
 
 { #category : #'accessing - events' }
