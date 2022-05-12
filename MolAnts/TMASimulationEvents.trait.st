@@ -6,11 +6,19 @@ Trait {
 }
 
 { #category : #'events - lifecycle' }
+TMASimulationEvents >> ant: aModelObject changeState: aSymbol [
+]
+
+{ #category : #'events - lifecycle' }
 TMASimulationEvents >> antBorn: anAnt [
 ]
 
 { #category : #'events - lifecycle' }
 TMASimulationEvents >> antDead: anAnt [
+]
+
+{ #category : #'events - lifecycle' }
+TMASimulationEvents >> insectBorn: anInsect [
 ]
 
 { #category : #'events - control' }

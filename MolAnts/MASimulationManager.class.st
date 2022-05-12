@@ -12,9 +12,21 @@ Class {
 }
 
 { #category : #properties }
+MASimulationManager class >> simulationHeight [
+
+	^ 500
+]
+
+{ #category : #properties }
 MASimulationManager class >> simulationStepDurationInMs [
 
 	^ 50
+]
+
+{ #category : #properties }
+MASimulationManager class >> simulationWidth [
+
+	^ 500
 ]
 
 { #category : #scripts }
@@ -73,6 +85,25 @@ MASimulationManager >> createAntHill [
 		self getTMASimulationEventsNotifier antBorn: ant.
 	].
 
+	
+]
+
+{ #category : #private }
+MASimulationManager >> createInsects [
+
+	"Create 100 insects"
+	1 to: 100 do:[ :e | | insect name |
+		"Create Ant"
+		name := ('Insect', e printString) asSymbol.
+		insect := MAInsect start: name.
+		insect position: (Random new nextIntegerBetween: 1 and: MASimulationManager simulationWidth)@(Random new nextIntegerBetween: 1 and: MASimulationManager simulationHeight).
+		
+		"Adding events producer into SimulationMManager and Ground"
+		ground forEvents: TMAPositionEvents addProducer: name.
+		
+		"Notify Ant creation"
+		self getTMASimulationEventsNotifier insectBorn: insect.
+	].
 	
 ]
 
@@ -137,7 +168,10 @@ MASimulationManager >> removeAntHill [
 { #category : #events }
 MASimulationManager >> stageNameChanged: aSymbol for: aModelObject [
 
-	aSymbol = #dead ifFalse:[^self].
+	aSymbol = #dead ifFalse:[
+		self getTMASimulationEventsNotifier ant: aModelObject changeState: aSymbol.
+		^self.
+	].
 	
 	self getTMASimulationEventsNotifier antDead: aModelObject.
 ]
@@ -147,6 +181,8 @@ MASimulationManager >> start [
 
 	self isRunning ifTrue:[^self].
 	self isAntHillCreated ifFalse:[self createAntHill].
+	
+	self createInsects.
 
 	self startSimulationLoop.
 	isRunning := true.

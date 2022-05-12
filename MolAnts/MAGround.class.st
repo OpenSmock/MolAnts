@@ -3,8 +3,21 @@ Class {
 	#superclass : #BlElement,
 	#traits : 'MolComponentImpl + TMAGroundType + TMAPositionEvents + TMASimulationEvents',
 	#classTraits : 'MolComponentImpl classTrait + TMAGroundType classTrait + TMAPositionEvents classTrait + TMASimulationEvents classTrait',
+	#instVars : [
+		'mySpace'
+	],
 	#category : #'MolAnts-View'
 }
+
+{ #category : #'events - lifecycle' }
+MAGround >> ant: aModelObject changeState: aSymbol [
+	
+	aSymbol = #adult ifTrue:[
+		self childWithId: aModelObject componentName ifFound: [ :e |
+			e background: Color yellow.	
+		].
+	].
+]
 
 { #category : #'events - lifecycle' }
 MAGround >> antBorn: anAnt [
@@ -35,7 +48,7 @@ MAGround >> componentActivate [
 	self getTMASimulationEventsSubscriber subscribe: self.
 	self getTMAPositionEventsSubscriber subscribe: self.
 	
-	self openInNewSpace.
+	mySpace := self openInNewSpace extent: (MASimulationManager simulationWidth + 5)@(MASimulationManager simulationWidth + 5).
 ]
 
 { #category : #'life cycle' }
@@ -43,6 +56,13 @@ MAGround >> componentPassivate [
 	
 	self getTMAPositionEventsSubscriber unsubscribe: self.
 	self getTMASimulationEventsSubscriber unsubscribe: self.
+]
+
+{ #category : #'life cycle' }
+MAGround >> componentRemove [
+	"here write the code corresponding to component remove phase"
+	
+	mySpace close.
 ]
 
 { #category : #'component accessing' }
@@ -78,6 +98,20 @@ MAGround >> initialize [
 			c vertical matchParent 
 	].
 	self background: Color brown.
+]
+
+{ #category : #'events - lifecycle' }
+MAGround >> insectBorn: anInsect [
+
+	| insecttView |
+	insecttView := BlElement new.
+	insecttView id: anInsect componentName.
+	insecttView geometry: BlCircleGeometry new.
+	insecttView background: Color black.
+	insecttView relocate: anInsect position.
+	insecttView size: 2@2.
+	
+	self addChild: insecttView.
 ]
 
 { #category : #events }
