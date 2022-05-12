@@ -1,10 +1,10 @@
 Trait {
-	#name : #TMAStateEvents,
+	#name : #TMAStageEvents,
 	#traits : 'MolComponentEvents',
 	#classTraits : 'MolComponentEvents classTrait',
 	#category : #'MolAnts-Molecule Contracts'
 }
 
 { #category : #events }
-TMAStateEvents >> stateChanged: aSymbol for: aModelObject [
+TMAStageEvents >> stageNameChanged: aSymbol for: aModelObject [
 ]
