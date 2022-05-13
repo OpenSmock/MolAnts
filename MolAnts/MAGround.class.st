@@ -78,6 +78,7 @@ MAGround >> componentPassivate [
 MAGround >> componentRemove [
 	"here write the code corresponding to component remove phase"
 	
+	self stopped.
 	mySpace close.
 ]
 

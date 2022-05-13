@@ -42,7 +42,7 @@ MASimulationManager >> componentActivate [
 	super componentActivate.
 	self getTMAStageEventsSubscriber subscribe: self.
 	
-	ground := MAGround start. 
+	ground := MAGround start: 'Ground'. 
 	self start.
 ]
 
@@ -58,9 +58,10 @@ MASimulationManager >> componentInitialize [
 MASimulationManager >> componentPassivate [
 
 	self getTMAStageEventsSubscriber unsubscribe: self.
-
+	
+	MAGround stop: 'Ground'.
+	ground := nil.
 	self stop.
-
 	super componentPassivate.
 
 ]

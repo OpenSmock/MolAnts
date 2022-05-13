@@ -83,7 +83,18 @@ MAStage >> getTMAStageEventsNotifier [
 { #category : #initialization }
 MAStage >> initializeRole [
 	
-	role := MARole start: (#role, self componentName asSymbol) asSymbol.
+	| x |
+	
+	x := Random new nextIntegerBetween: 1 and: 3. 
+	x=1 ifTrue: [ 
+		role := MAQueen start: (#role, self componentName asSymbol) asSymbol.
+	].
+	x=2 ifTrue: [ 
+		role := MAFighter start: (#role, self componentName asSymbol) asSymbol.
+	].
+	x=3 ifTrue: [ 
+		role := MAWorker start: (#role, self componentName asSymbol) asSymbol.
+	].
 ]
 
 { #category : #role }
