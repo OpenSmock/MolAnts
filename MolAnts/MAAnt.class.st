@@ -82,7 +82,7 @@ MAAnt >> getTMAStageServicesProvider [
 { #category : #stage }
 MAAnt >> initializeStage [
 
-	MAStage start: (#stage, self componentName asSymbol) asSymbol
+	stage := MAStage start: (#stage, self componentName asSymbol) asSymbol
 ]
 
 { #category : #accessing }

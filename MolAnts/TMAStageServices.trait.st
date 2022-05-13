@@ -12,7 +12,7 @@ Trait {
 { #category : #role }
 TMAStageServices >> getRole [
 
-	^role
+	^ self getTMARoleServicesProvider 
 ]
 
 { #category : #role }

@@ -10,7 +10,23 @@ Class {
 }
 
 { #category : #'events - lifecycle' }
-MAGround >> ant: aModelObject changeState: aSymbol [
+MAGround >> ant: aModelObject changeRole: aSymbol [
+
+	aSymbol = #queen ifTrue:[
+		self childWithId: aModelObject componentName ifFound: [ :e |
+			e background: Color pink.
+		].
+	].
+
+	aSymbol = #fighter ifTrue:[
+		self childWithId: aModelObject componentName ifFound: [ :e |
+			e background: Color green.	
+		].
+	].
+]
+
+{ #category : #'events - lifecycle' }
+MAGround >> ant: aModelObject changeStage: aSymbol [
 	
 	aSymbol = #adult ifTrue:[
 		self childWithId: aModelObject componentName ifFound: [ :e |

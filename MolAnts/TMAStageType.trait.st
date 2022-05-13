@@ -16,3 +16,9 @@ TMAStageType classSide >> providedComponentServices [
 	<componentContract>
 	^ {TMAStageServices } 
 ]
+
+{ #category : #'accessing - services' }
+TMAStageType classSide >> usedComponentServices [
+	<componentContract>
+	^ {TMARoleServices}
+]

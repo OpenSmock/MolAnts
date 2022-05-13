@@ -6,5 +6,9 @@ Trait {
 }
 
 { #category : #events }
+TMAStageEvents >> roleChanged: aSymbol for: aModelObject [
+]
+
+{ #category : #events }
 TMAStageEvents >> stageNameChanged: aSymbol for: aModelObject [
 ]

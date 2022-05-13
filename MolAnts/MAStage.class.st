@@ -25,13 +25,24 @@ MAStage >> componentInitialize [
 	
 ]
 
+{ #category : #'life cycle' }
+MAStage >> componentRemove [
+	"here write the code corresponding to component remove phase"
+	
+	self removeRole.
+]
+
 { #category : #private }
 MAStage >> computeStageFor: anAnt [
 	
 	self getStageName = #egg ifTrue:[
 		ageInMs > eggStateDurationInMs ifTrue:[ 
 			stageName := #adult.
-			self getTMAStageEventsNotifier stageNameChanged: stageName for: anAnt. 
+			self getTMAStageEventsNotifier stageNameChanged: stageName for: anAnt.
+			
+			self initializeRole.
+			self forServices: TMARoleServices useProvider: (#role, self componentName asSymbol) asSymbol.
+			self getTMAStageEventsNotifier roleChanged: (self getRole getRoleName) for: anAnt.
 		].
 		^self	 
 	]. 
@@ -53,13 +64,38 @@ MAStage >> doSimulationStepFor: anAnt [
 ]
 
 { #category : #'component accessing' }
+MAStage >> getTMARoleServicesProvider [
+	| servicesSymbol servicesProvider itf |
+	itf := TMARoleServices.
+	servicesSymbol := self servicesProviders at: itf ifAbsent: [^MolNotFoundServicesProvider new interface: itf name: nil].
+	servicesSymbol isSymbol
+	 	ifTrue: 
+			[servicesProvider := MolComponentManager default locatorServices 
+						searchServicesProviderFor: TMARoleServices named: servicesSymbol]. 
+	^servicesProvider
+]
+
+{ #category : #'component accessing' }
 MAStage >> getTMAStageEventsNotifier [
 	^self eventsNotifiers at: TMAStageEvents ifAbsent: [^MolNotFoundEventsNotifier new interface: TMAStageEvents name: nil].
+]
+
+{ #category : #initialization }
+MAStage >> initializeRole [
+	
+	role := MARole start: (#role, self componentName asSymbol) asSymbol.
 ]
 
 { #category : #role }
 MAStage >> moveFrom: aPosition [
 
 	self getStageName ~= #adult ifTrue:[^aPosition].
-	^ aPosition + (((Random new next * 10 - 5) rounded) @ ((Random new next * 10 - 5) rounded))
+	^ (self getRole moveFrom: aPosition).
+
+]
+
+{ #category : #'life cycle' }
+MAStage >> removeRole [
+
+	MARole stop: (#role, self componentName asSymbol) asSymbol
 ]

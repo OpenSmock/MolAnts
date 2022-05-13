@@ -166,10 +166,17 @@ MASimulationManager >> removeAntHill [
 ]
 
 { #category : #events }
+MASimulationManager >> roleChanged: aSymbol for: aModelObject [
+
+	self getTMASimulationEventsNotifier ant: aModelObject changeRole: aSymbol.
+	^ self
+]
+
+{ #category : #events }
 MASimulationManager >> stageNameChanged: aSymbol for: aModelObject [
 
 	aSymbol = #dead ifFalse:[
-		self getTMASimulationEventsNotifier ant: aModelObject changeState: aSymbol.
+		self getTMASimulationEventsNotifier ant: aModelObject changeStage: aSymbol.
 		^self.
 	].
 	

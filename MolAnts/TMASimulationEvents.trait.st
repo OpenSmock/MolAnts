@@ -6,7 +6,11 @@ Trait {
 }
 
 { #category : #'events - lifecycle' }
-TMASimulationEvents >> ant: aModelObject changeState: aSymbol [
+TMASimulationEvents >> ant: aModelObject changeRole: aSymbol [
+]
+
+{ #category : #'events - lifecycle' }
+TMASimulationEvents >> ant: aModelObject changeStage: aSymbol [
 ]
 
 { #category : #'events - lifecycle' }
