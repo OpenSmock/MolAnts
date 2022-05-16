@@ -30,6 +30,11 @@ MAStage >> componentRemove [
 	"here write the code corresponding to component remove phase"
 	
 	self removeRole.
+	ageInMs := nil.
+	eggStateDurationInMs := nil.
+	adultStateDurationInMs := nil.
+	role := nil.
+	stageName := nil.
 ]
 
 { #category : #private }
@@ -108,5 +113,7 @@ MAStage >> moveFrom: aPosition [
 { #category : #'life cycle' }
 MAStage >> removeRole [
 
-	MARole stop: (#role, self componentName asSymbol) asSymbol
+	stageName = #adult ifTrue: [
+		role class stop: (#role, self componentName asSymbol) asSymbol
+	].
 ]

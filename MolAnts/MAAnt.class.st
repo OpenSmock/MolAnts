@@ -39,6 +39,9 @@ MAAnt >> componentRemove [
 	"here write the code corresponding to component remove phase"
 	
 	self removeStage.
+	position := nil.
+	ageInMs := nil.
+	stage := nil.
 ]
 
 { #category : #private }

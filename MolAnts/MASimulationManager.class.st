@@ -6,7 +6,8 @@ Class {
 	#instVars : [
 		'simulationThread',
 		'ground',
-		'isAntHillCreated'
+		'isAntHillCreated',
+		'isInsectsCreated'
 	],
 	#category : #'MolAnts-Core'
 }
@@ -36,6 +37,15 @@ MASimulationManager class >> startSimulation [
 	self start.
 ]
 
+{ #category : #scripts }
+MASimulationManager class >> stopSimulation [
+	<script>
+	
+	self stop.
+	MolComponentManager cleanUp.
+	
+]
+
 { #category : #'component life cycle' }
 MASimulationManager >> componentActivate [ 
 
@@ -58,11 +68,14 @@ MASimulationManager >> componentInitialize [
 MASimulationManager >> componentPassivate [
 
 	self getTMAStageEventsSubscriber unsubscribe: self.
-	
-	MAGround stop: 'Ground'.
-	ground := nil.
-	self stop.
 	super componentPassivate.
+
+]
+
+{ #category : #'component life cycle' }
+MASimulationManager >> componentRemove [
+
+	self stop.
 
 ]
 
@@ -91,6 +104,8 @@ MASimulationManager >> createAntHill [
 
 { #category : #private }
 MASimulationManager >> createInsects [
+
+	self isInsectsCreated: true.
 
 	"Create 100 insects"
 	1 to: 100 do:[ :e | | insect name |
@@ -137,6 +152,18 @@ MASimulationManager >> isAntHillCreated: anObject [
 	isAntHillCreated := anObject
 ]
 
+{ #category : #accessing }
+MASimulationManager >> isInsectsCreated [
+
+	^ isInsectsCreated
+]
+
+{ #category : #accessing }
+MASimulationManager >> isInsectsCreated: anObject [
+
+	isInsectsCreated := anObject
+]
+
 { #category : #services }
 MASimulationManager >> pause [
 
@@ -164,6 +191,19 @@ MASimulationManager >> removeAntHill [
 	].
 	
 	self isAntHillCreated: false.
+]
+
+{ #category : #private }
+MASimulationManager >> removeInsects [
+
+	"Delete 100 insects"
+	1 to: 100 do:[ :e | | name |
+		"Delete insect"
+		name := ('Insect', e printString) asSymbol.
+		MAInsect stop: name.
+	].
+	
+	self isInsectsCreated: false.
 ]
 
 { #category : #events }
@@ -218,8 +258,15 @@ MASimulationManager >> startSimulationLoop [
 MASimulationManager >> stop [
 
 	self stopSimulationLoop.
+	
+	MAGround stop: 'Ground'.
+	ground := nil.
+	
 	self isAntHillCreated ifTrue:[	self removeAntHill ].
+	self isInsectsCreated ifTrue:[	self removeInsects ].
+		
 	isRunning := false.
+	
 	self getTMASimulationEventsNotifier stopped.
 ]
 
@@ -227,7 +274,6 @@ MASimulationManager >> stop [
 MASimulationManager >> stopSimulationLoop [
 
 	simulationThread ifNil:[^self].
-
 	simulationThread terminate.
 	simulationThread := nil.	
 	
