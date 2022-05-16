@@ -30,6 +30,11 @@ ManifestMolAnts class >> ruleReGuardClauseRuleV1FalsePositive [
 ]
 
 { #category : #'code-critics' }
+ManifestMolAnts class >> ruleReTemporaryVariableCapitalizationRuleV1FalsePositive [
+	^ #(#(#(#RGMethodDefinition #(#MAFighter #moveFrom: #false)) #'2022-05-16T13:17:48.511458+01:00') )
+]
+
+{ #category : #'code-critics' }
 ManifestMolAnts class >> ruleRefersToClassRuleV1FalsePositive [
 	^ #(#(#(#RGMethodDefinition #(#MASimulationManager #start #false)) #'2022-05-12T14:12:58.495687+01:00') #(#(#RGClassDefinition #(#MASimulationManager)) #'2022-05-12T14:19:02.133629+01:00') )
 ]

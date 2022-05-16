@@ -6,6 +6,12 @@ Class {
 	#category : #'MolAnts-Model'
 }
 
+{ #category : #accessing }
+MARole >> getRoleName [
+
+	^ roleName.
+]
+
 { #category : #'component accessing' }
 MARole >> getTMARoleEventsNotifier [
 	^self eventsNotifiers at: TMARoleEvents ifAbsent: [^MolNotFoundEventsNotifier new interface: TMARoleEvents name: nil].

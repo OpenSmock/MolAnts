@@ -14,6 +14,12 @@ Class {
 }
 
 { #category : #properties }
+MASimulationManager class >> simulationAntHillPosition [
+
+	^ 200@200.
+]
+
+{ #category : #properties }
 MASimulationManager class >> simulationHeight [
 
 	^ 500
@@ -97,7 +103,7 @@ MASimulationManager >> createAnt [
 		
 		name := ('Ant', nbAnt printString) asSymbol.
 		ant := MAAnt start: name.
-		ant position: 200@200.
+		ant position: self class simulationAntHillPosition.
 		
 		"Adding events producer into SimulationMManager and Ground"
 		self forEvents: TMAStageEvents addProducer: (ant getStage componentName). 
@@ -106,8 +112,6 @@ MASimulationManager >> createAnt [
 		
 		"Notify Ant creation"
 		self getTMASimulationEventsNotifier antBorn: ant.
-		
-		Transcript show: 'Ant  born',nbAnt rounded printString; cr.
 	].
 
 	
@@ -119,10 +123,12 @@ MASimulationManager >> createAntHill [
 	self isAntHillCreated: true.
 
 	"Create x ants"
-	1 to: 50 do:[ :e |
+	"1 to: 50 do:[ :e |
 		self createAnt.
-	].
-
+	]."
+	
+	"Create the first queen of ants"
+	self createAnt.
 	
 ]
 
@@ -225,13 +231,14 @@ MASimulationManager >> queenLaid [
 { #category : #private }
 MASimulationManager >> removeAntHill [
 
-	"Delete x ants"
+	"Delete nbAnt ants"
 	1 to: nbAnt do:[ :e | | name |
 		"Delete Ant"
 		name := ('Ant', e printString) asSymbol.
 		MAAnt stop: name.
 	].
-	
+
+	nbAnt := 0.
 	self isAntHillCreated: false.
 ]
 

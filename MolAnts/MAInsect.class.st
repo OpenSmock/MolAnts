@@ -1,8 +1,8 @@
 Class {
 	#name : #MAInsect,
 	#superclass : #Object,
-	#traits : 'MolComponentImpl + TMAInsectType + TMASimulationEvents',
-	#classTraits : 'MolComponentImpl classTrait + TMAInsectType classTrait + TMASimulationEvents classTrait',
+	#traits : 'MolComponentImpl + TMAInsectsType + TMASimulationEvents',
+	#classTraits : 'MolComponentImpl classTrait + TMAInsectsType classTrait + TMASimulationEvents classTrait',
 	#instVars : [
 		'position',
 		'ageInMs'

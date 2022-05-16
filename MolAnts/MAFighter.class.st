@@ -12,10 +12,31 @@ MAFighter >> componentInitialize [
 ]
 
 { #category : #role }
+MAFighter >> doSimulationStepFor: anAnt [
+
+
+]
+
+{ #category : #role }
 MAFighter >> moveFrom: aPosition [
 
-	roleName = #fighter ifTrue: [ 
-		^ aPosition + (0 @ ((Random new next * 10 - 5) rounded))
+	| newPos AntHillPos |
+	
+	newPos := aPosition + (((Random new next * 10 - 5) rounded) @ ((Random new next * 10 - 5) rounded)).
+	AntHillPos := MASimulationManager simulationAntHillPosition.
+		
+	(newPos x < (AntHillPos x - 50)) ifTrue: [
+		newPos := (AntHillPos x - 50)@(newPos y)
 	].
-
+	(newPos y < (AntHillPos y - 50)) ifTrue: [
+		newPos := (newPos x)@(AntHillPos y - 50)
+	].
+	(newPos x > (AntHillPos x + 50)) ifTrue: [
+		newPos := (AntHillPos x + 50)@(newPos y)
+	].
+	(newPos y > (AntHillPos y + 50)) ifTrue: [ 
+		newPos := (newPos x)@(AntHillPos y + 50)
+	].
+		
+	^ newPos.
 ]

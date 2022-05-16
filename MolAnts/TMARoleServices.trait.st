@@ -14,8 +14,6 @@ TMARoleServices >> doSimulationStepFor: anAnt [
 
 { #category : #accessing }
 TMARoleServices >> getRoleName [
-
-	^ roleName.
 ]
 
 { #category : #role }

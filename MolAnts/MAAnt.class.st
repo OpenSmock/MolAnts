@@ -106,20 +106,6 @@ MAAnt >> position: aPoint [
 
 	position ~= aPoint ifFalse:[^self]. 
 	position := aPoint.
-	
-	(position x < 0) ifTrue: [
-		position := 0@(position y)
-	].
-	(position y < 0) ifTrue: [
-		position := (position x)@0
-	].
-	(position x > MASimulationManager simulationWidth) ifTrue: [
-		position := (MASimulationManager simulationHeight)@(position y)
-	].
-	(position y > MASimulationManager simulationHeight ) ifTrue: [ 
-		position := (position x)@(MASimulationManager simulationWidth)
-	].
-	
 	self getTMAPositionEventsNotifier positionChanged: aPoint for: self.
 	
 	

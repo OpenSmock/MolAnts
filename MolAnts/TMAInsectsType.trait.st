@@ -1,18 +1,18 @@
 Trait {
-	#name : #TMAInsectType,
+	#name : #TMAInsectsType,
 	#traits : 'MolComponentType',
 	#classTraits : 'MolComponentType classTrait',
 	#category : #'MolAnts-Molecule Contracts'
 }
 
 { #category : #'accessing - events' }
-TMAInsectType classSide >> consumedComponentEvents [
+TMAInsectsType classSide >> consumedComponentEvents [
 	<componentContract>
 	^ {TMASimulationEvents}
 ]
 
 { #category : #'accessing - events' }
-TMAInsectType classSide >> producedComponentEvents [
+TMAInsectsType classSide >> producedComponentEvents [
 	<componentContract>
 	^ {TMAPositionEvents} 
 ]

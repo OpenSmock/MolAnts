@@ -14,7 +14,7 @@ MAQueen >> componentInitialize [
 { #category : #role }
 MAQueen >> doSimulationStepFor: anAnt [
 
-	(Random new nextIntegerBetween: 1 and: 1000 ) = 1 ifTrue: [ 
+	(Random new nextIntegerBetween: 1 and: 50 ) = 1 ifTrue: [ 
 		self getTMARoleEventsNotifier queenLaid.
 	]
 ]
@@ -22,7 +22,5 @@ MAQueen >> doSimulationStepFor: anAnt [
 { #category : #role }
 MAQueen >> moveFrom: aPosition [
 
-	roleName = #queen ifTrue: [ 
-		^ aPosition + (((Random new next * 10 - 5) rounded) @ 0)
-	].
+		^ aPosition.
 ]

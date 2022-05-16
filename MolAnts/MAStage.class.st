@@ -87,15 +87,23 @@ MAStage >> initializeRole [
 	
 	| x |
 	
-	x := Random new nextIntegerBetween: 1 and: 3. 
+	componentName = #stageAnt1 ifTrue: [ 
+		role := MAQueen start: (#role, self componentName asSymbol) asSymbol.
+		^ self.
+	].
+	
+	x := Random new nextIntegerBetween: 1 and: 100. 
 	x=1 ifTrue: [ 
 		role := MAQueen start: (#role, self componentName asSymbol) asSymbol.
+		^ self.
 	].
-	x=2 ifTrue: [ 
+	x<50 ifTrue: [ 
 		role := MAFighter start: (#role, self componentName asSymbol) asSymbol.
+		^ self.
 	].
-	x=3 ifTrue: [ 
+	x<=100 ifTrue: [ 
 		role := MAWorker start: (#role, self componentName asSymbol) asSymbol.
+		^ self.
 	].
 ]
 
