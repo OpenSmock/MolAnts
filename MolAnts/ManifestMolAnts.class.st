@@ -10,6 +10,16 @@ Class {
 }
 
 { #category : #'code-critics' }
+ManifestMolAnts class >> ruleCascadedNextPutAllsRuleV1FalsePositive [
+	^ #(#(#(#RGClassDefinition #(#MASimulationManager)) #'2022-05-16T10:44:22.139683+01:00') )
+]
+
+{ #category : #'code-critics' }
+ManifestMolAnts class >> ruleCodeCruftLeftInMethodsRuleV1FalsePositive [
+	^ #(#(#(#RGPackageDefinition #(#MolAnts)) #'2022-05-16T12:30:20.492871+01:00') )
+]
+
+{ #category : #'code-critics' }
 ManifestMolAnts class >> ruleGuardingClauseRuleV1FalsePositive [
 	^ #(#(#(#RGPackageDefinition #(#MolAnts)) #'2022-05-13T07:29:41.80178+01:00') )
 ]

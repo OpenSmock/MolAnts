@@ -10,6 +10,12 @@ Class {
 	#category : #'MolAnts-Model'
 }
 
+{ #category : #accessing }
+MAAnt >> ageInMs [
+
+	^ ageInMs
+]
+
 { #category : #'life cycle' }
 MAAnt >> componentActivate [
 		
@@ -47,10 +53,11 @@ MAAnt >> componentRemove [
 { #category : #private }
 MAAnt >> doSimulationStep [
 
-	ageInMs := ageInMs + MASimulationManager simulationStepDurationInMs.
-	self getStage doSimulationStepFor: self.
-	
-	self position: (self getStage moveFrom: self position).  
+	self getStage isAlive ifTrue: [ 
+		ageInMs := ageInMs + MASimulationManager simulationStepDurationInMs.
+		self getStage doSimulationStepFor: self.
+		self position: (self getStage moveFrom: self position).  
+	].
 ]
 
 { #category : #'component accessing' }

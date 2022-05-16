@@ -1,13 +1,14 @@
 Class {
 	#name : #MASimulationManager,
 	#superclass : #MolAbstractComponentImpl,
-	#traits : 'TMASimulationManagerType + TMAStageEvents + TMASimulationServices',
-	#classTraits : 'TMASimulationManagerType classTrait + TMAStageEvents classTrait + TMASimulationServices classTrait',
+	#traits : 'TMASimulationManagerType + TMAStageEvents + TMASimulationServices + TMARoleEvents',
+	#classTraits : 'TMASimulationManagerType classTrait + TMAStageEvents classTrait + TMASimulationServices classTrait + TMARoleEvents classTrait',
 	#instVars : [
 		'simulationThread',
 		'ground',
 		'isAntHillCreated',
-		'isInsectsCreated'
+		'isInsectsCreated',
+		'nbAnt'
 	],
 	#category : #'MolAnts-Core'
 }
@@ -51,6 +52,7 @@ MASimulationManager >> componentActivate [
 
 	super componentActivate.
 	self getTMAStageEventsSubscriber subscribe: self.
+	self getTMARoleEventsSubscriber subscribe: self.
 	
 	ground := MAGround start: 'Ground'. 
 	self start.
@@ -61,13 +63,18 @@ MASimulationManager >> componentInitialize [
 	"Create a ground"
 
 	super componentInitialize.
-
+	simulationThread := nil.
+	ground := nil.
+	isAntHillCreated := false.
+	isInsectsCreated := false.
+	nbAnt := 0.
 ]
 
 { #category : #'component life cycle' }
 MASimulationManager >> componentPassivate [
 
 	self getTMAStageEventsSubscriber unsubscribe: self.
+	self getTMARoleEventsSubscriber unsubscribe: self.
 	super componentPassivate.
 
 ]
@@ -80,23 +87,40 @@ MASimulationManager >> componentRemove [
 ]
 
 { #category : #private }
-MASimulationManager >> createAntHill [
+MASimulationManager >> createAnt [
+	
+	| name ant |
 
-	self isAntHillCreated: true.
-
-	"Create x ants"
-	1 to: 50 do:[ :e | | ant name |
-		"Create Ant"
-		name := ('Ant', e printString) asSymbol.
+	isAntHillCreated ifTrue: [ 
+		
+		nbAnt := nbAnt + 1.
+		
+		name := ('Ant', nbAnt printString) asSymbol.
 		ant := MAAnt start: name.
 		ant position: 200@200.
 		
 		"Adding events producer into SimulationMManager and Ground"
 		self forEvents: TMAStageEvents addProducer: (ant getStage componentName). 
+		self forEvents: TMARoleEvents addProducer: (ant getStage getRole componentName). 
 		ground forEvents: TMAPositionEvents addProducer: name.
 		
 		"Notify Ant creation"
 		self getTMASimulationEventsNotifier antBorn: ant.
+		
+		Transcript show: 'Ant  born',nbAnt rounded printString; cr.
+	].
+
+	
+]
+
+{ #category : #private }
+MASimulationManager >> createAntHill [
+
+	self isAntHillCreated: true.
+
+	"Create x ants"
+	1 to: 50 do:[ :e |
+		self createAnt.
 	].
 
 	
@@ -121,6 +145,18 @@ MASimulationManager >> createInsects [
 		self getTMASimulationEventsNotifier insectBorn: insect.
 	].
 	
+]
+
+{ #category : #'component accessing' }
+MASimulationManager >> getTMARoleEventsSubscriber [
+	| eventsSymbol eventsSubscriber itf |
+	itf := TMARoleEvents.
+	eventsSymbol := self eventsSubscribers at: itf ifAbsent: [^MolNotFoundEventsSubscriber new interface: itf name: nil].
+	eventsSymbol isCollection
+	 	ifTrue: 
+			[eventsSubscriber := MolComponentManager default locatorServices 
+						searchEventsSubscriberFor: TMARoleEvents named: eventsSymbol ]. 
+	^eventsSubscriber
 ]
 
 { #category : #'component accessing' }
@@ -180,11 +216,17 @@ MASimulationManager >> pauseSimulationLoop [
 	simulationThread suspend.
 ]
 
+{ #category : #events }
+MASimulationManager >> queenLaid [
+
+	self createAnt.
+]
+
 { #category : #private }
 MASimulationManager >> removeAntHill [
 
 	"Delete x ants"
-	1 to: 50 do:[ :e | | name |
+	1 to: nbAnt do:[ :e | | name |
 		"Delete Ant"
 		name := ('Ant', e printString) asSymbol.
 		MAAnt stop: name.
@@ -215,12 +257,11 @@ MASimulationManager >> roleChanged: aSymbol for: aModelObject [
 
 { #category : #events }
 MASimulationManager >> stageNameChanged: aSymbol for: aModelObject [
-
+	
 	aSymbol = #dead ifFalse:[
 		self getTMASimulationEventsNotifier ant: aModelObject changeStage: aSymbol.
 		^self.
 	].
-	
 	self getTMASimulationEventsNotifier antDead: aModelObject.
 ]
 

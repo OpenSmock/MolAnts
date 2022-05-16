@@ -21,6 +21,10 @@ TMAStageServices >> getStageName [
 	^stageName ifNil: [ stageName := #egg ].
 ]
 
+{ #category : #testing }
+TMAStageServices >> isAlive [
+]
+
 { #category : #role }
 TMAStageServices >> moveFrom: aPosition [
 ]

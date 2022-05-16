@@ -4,7 +4,6 @@ Class {
 	#traits : 'MolComponentImpl + TMAStageType + TMAStageServices',
 	#classTraits : 'MolComponentImpl classTrait + TMAStageType classTrait + TMAStageServices classTrait',
 	#instVars : [
-		'ageInMs',
 		'eggStateDurationInMs',
 		'adultStateDurationInMs'
 	],
@@ -12,17 +11,12 @@ Class {
 }
 
 { #category : #'life cycle' }
-MAStage >> componentActivate [
-	
-]
-
-{ #category : #'life cycle' }
 MAStage >> componentInitialize [
 	
 	eggStateDurationInMs := (Random new next * 10000) rounded + 1000.
 	adultStateDurationInMs := (Random new next * 50000) rounded + 50000.
-	ageInMs := 0.
 	
+	self initializeRole.
 ]
 
 { #category : #'life cycle' }
@@ -30,7 +24,6 @@ MAStage >> componentRemove [
 	"here write the code corresponding to component remove phase"
 	
 	self removeRole.
-	ageInMs := nil.
 	eggStateDurationInMs := nil.
 	adultStateDurationInMs := nil.
 	role := nil.
@@ -41,11 +34,9 @@ MAStage >> componentRemove [
 MAStage >> computeStageFor: anAnt [
 	
 	self getStageName = #egg ifTrue:[
-		ageInMs > eggStateDurationInMs ifTrue:[ 
+		anAnt ageInMs > eggStateDurationInMs ifTrue:[ 
 			stageName := #adult.
 			self getTMAStageEventsNotifier stageNameChanged: stageName for: anAnt.
-			
-			self initializeRole.
 			self forServices: TMARoleServices useProvider: (#role, self componentName asSymbol) asSymbol.
 			self getTMAStageEventsNotifier roleChanged: (self getRole getRoleName) for: anAnt.
 		].
@@ -53,7 +44,7 @@ MAStage >> computeStageFor: anAnt [
 	]. 
 
 	self getStageName = #adult ifTrue:[
-		ageInMs > adultStateDurationInMs ifTrue:[
+		anAnt ageInMs > adultStateDurationInMs ifTrue:[
 			stageName := #dead.
 			self getTMAStageEventsNotifier stageNameChanged: stageName for: anAnt. 
 		].
@@ -64,8 +55,14 @@ MAStage >> computeStageFor: anAnt [
 { #category : #private }
 MAStage >> doSimulationStepFor: anAnt [
 
-	ageInMs := ageInMs + MASimulationManager simulationStepDurationInMs.
 	self computeStageFor: anAnt.
+	self getRole doSimulationStepFor: anAnt.
+]
+
+{ #category : #role }
+MAStage >> getRole [
+
+	^ role.
 ]
 
 { #category : #'component accessing' }
@@ -102,6 +99,11 @@ MAStage >> initializeRole [
 	].
 ]
 
+{ #category : #testing }
+MAStage >> isAlive [
+	^ stageName ~= #dead.
+]
+
 { #category : #role }
 MAStage >> moveFrom: aPosition [
 
@@ -113,7 +115,5 @@ MAStage >> moveFrom: aPosition [
 { #category : #'life cycle' }
 MAStage >> removeRole [
 
-	stageName = #adult ifTrue: [
-		role class stop: (#role, self componentName asSymbol) asSymbol
-	].
+	role class stop: (#role, self componentName asSymbol) asSymbol
 ]

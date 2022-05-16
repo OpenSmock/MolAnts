@@ -8,6 +8,10 @@ Trait {
 	#category : #'MolAnts-Molecule Contracts'
 }
 
+{ #category : #role }
+TMARoleServices >> doSimulationStepFor: anAnt [
+]
+
 { #category : #accessing }
 TMARoleServices >> getRoleName [
 
