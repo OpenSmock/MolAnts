@@ -25,6 +25,10 @@ TMASimulationEvents >> antDead: anAnt [
 TMASimulationEvents >> insectBorn: anInsect [
 ]
 
+{ #category : #'events - lifecycle' }
+TMASimulationEvents >> insectDead: anInsect [
+]
+
 { #category : #'events - control' }
 TMASimulationEvents >> paused [
 ]

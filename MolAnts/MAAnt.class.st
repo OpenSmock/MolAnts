@@ -60,6 +60,12 @@ MAAnt >> doSimulationStep [
 	].
 ]
 
+{ #category : #services }
+MAAnt >> getInsects [
+
+	^ self getTMASimulationServicesProvider InsectsPos. 
+]
+
 { #category : #'component accessing' }
 MAAnt >> getTMAPositionEventsNotifier [
 	^self eventsNotifiers at: TMAPositionEvents ifAbsent: [^MolNotFoundEventsNotifier new interface: TMAPositionEvents name: nil].
@@ -75,6 +81,18 @@ MAAnt >> getTMASimulationEventsSubscriber [
 			[eventsSubscriber := MolComponentManager default locatorServices 
 						searchEventsSubscriberFor: TMASimulationEvents named: eventsSymbol ]. 
 	^eventsSubscriber
+]
+
+{ #category : #'component accessing' }
+MAAnt >> getTMASimulationServicesProvider [
+	| servicesSymbol servicesProvider itf |
+	itf := TMASimulationServices.
+	servicesSymbol := self servicesProviders at: itf ifAbsent: [^MolNotFoundServicesProvider new interface: itf name: nil].
+	servicesSymbol isSymbol
+	 	ifTrue: 
+			[servicesProvider := MolComponentManager default locatorServices 
+						searchServicesProviderFor: TMASimulationServices named: servicesSymbol]. 
+	^servicesProvider
 ]
 
 { #category : #'component accessing' }

@@ -5,7 +5,8 @@ Class {
 	#classTraits : 'MolComponentImpl classTrait + TMAInsectsType classTrait + TMASimulationEvents classTrait',
 	#instVars : [
 		'position',
-		'ageInMs'
+		'ageInMs',
+		'stage'
 	],
 	#category : #'MolAnts-Model'
 }
@@ -20,6 +21,7 @@ MAInsect >> componentActivate [
 MAInsect >> componentInitialize [
 
 	ageInMs := 0.
+	stage := #alive.
 ]
 
 { #category : #'life cycle' }
@@ -31,9 +33,10 @@ MAInsect >> componentPassivate [
 { #category : #'life cycle' }
 MAInsect >> doSimulationStep [
 
-	ageInMs := ageInMs + MASimulationManager simulationStepDurationInMs.
-
-	self position: (position + (((Random new next * 10 - 5) rounded) @ ((Random new next * 10 - 5) rounded))).  
+	stage = #alive ifTrue: [
+		ageInMs := ageInMs + MASimulationManager simulationStepDurationInMs.
+		self position: (position + (((Random new next * 10 - 5) rounded) @ ((Random new next * 10 - 5) rounded))).  
+	].
 ]
 
 { #category : #'component accessing' }
@@ -51,6 +54,14 @@ MAInsect >> getTMASimulationEventsSubscriber [
 			[eventsSubscriber := MolComponentManager default locatorServices 
 						searchEventsSubscriberFor: TMASimulationEvents named: eventsSymbol ]. 
 	^eventsSubscriber
+]
+
+{ #category : #'events - lifecycle' }
+MAInsect >> insectDead: anInsect [
+
+	self = anInsect ifTrue: [
+		stage := #dead.
+	]
 ]
 
 { #category : #'life cycle' }

@@ -6,5 +6,9 @@ Trait {
 }
 
 { #category : #events }
+TMARoleEvents >> ant: anAnt eatAt: aPoint [
+]
+
+{ #category : #events }
 TMARoleEvents >> queenLaid [
 ]

@@ -14,14 +14,14 @@ MAGround >> ant: aModelObject changeRole: aSymbol [
 
 	aSymbol = #queen ifTrue:[
 		self childWithId: aModelObject componentName ifFound: [ :e |
-			e background: Color pink.
+			e background: (Color fromHexString: 'e000ff').
 			e size: 5@5.
 		].
 	].
 
 	aSymbol = #fighter ifTrue:[
 		self childWithId: aModelObject componentName ifFound: [ :e |
-			e background: Color green.	
+			e background: (Color fromHexString: '68ff00').
 		].
 	].
 ]
@@ -31,7 +31,7 @@ MAGround >> ant: aModelObject changeStage: aSymbol [
 	
 	aSymbol = #adult ifTrue:[
 		self childWithId: aModelObject componentName ifFound: [ :e |
-			e background: Color yellow.	
+			e background: (Color fromHexString: '#DFFF00').	
 		].
 	].
 ]
@@ -45,7 +45,7 @@ MAGround >> antBorn: anAnt [
 	antView geometry: BlCircleGeometry new.
 	antView background: Color white.
 	antView relocate: anAnt position.
-	antView size: 2@2.
+	antView size: 3@3.
 	
 	self addChild: antView.
 ]
@@ -101,7 +101,7 @@ MAGround >> initialize [
 			c horizontal matchParent. 
 			c vertical matchParent 
 	].
-	self background: Color brown twiceLighter.
+	self background: (Color fromHexString: 'c7baae').
 ]
 
 { #category : #'events - lifecycle' }
@@ -113,9 +113,18 @@ MAGround >> insectBorn: anInsect [
 	insecttView geometry: BlCircleGeometry new.
 	insecttView background: Color black.
 	insecttView relocate: anInsect position.
-	insecttView size: 2@2.
+	insecttView size: 3@3.
 	
 	self addChild: insecttView.
+]
+
+{ #category : #'events - lifecycle' }
+MAGround >> insectDead: anInsect [
+
+	self childWithId: anInsect componentName ifFound: [ :e |
+		e background: Color red.	
+	].
+
 ]
 
 { #category : #events }

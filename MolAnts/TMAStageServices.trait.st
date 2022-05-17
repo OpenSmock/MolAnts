@@ -10,6 +10,10 @@ Trait {
 }
 
 { #category : #role }
+TMAStageServices >> doSimulationStepFor: anAnt [
+]
+
+{ #category : #role }
 TMAStageServices >> getRole [
 
 	^ self getTMARoleServicesProvider 

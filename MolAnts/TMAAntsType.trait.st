@@ -26,5 +26,5 @@ TMAAntsType classSide >> providedComponentServices [
 { #category : #'accessing - services' }
 TMAAntsType classSide >> usedComponentServices [
 	<componentContract>
-	^ {TMAStageServices }
+	^ {TMAStageServices . TMASimulationServices}
 ]

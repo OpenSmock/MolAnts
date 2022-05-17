@@ -9,6 +9,10 @@ Trait {
 }
 
 { #category : #services }
+TMASimulationServices >> InsectsPos [
+]
+
+{ #category : #services }
 TMASimulationServices >> isRunning [
 
 	^isRunning ifNil: [ isRunning := false ].

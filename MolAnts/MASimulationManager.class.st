@@ -54,6 +54,31 @@ MASimulationManager class >> stopSimulation [
 	
 ]
 
+{ #category : #services }
+MASimulationManager >> InsectsPos [
+
+	^ InsectsPos.
+]
+
+{ #category : #events }
+MASimulationManager >> ant: anAnt eatAt: aPoint [
+
+	| insect |
+	
+	"remove the insect in the dictionary."
+	(InsectsPos includesKey: aPoint) ifTrue: [
+		insect := (InsectsPos at: aPoint) removeFirst.
+		(InsectsPos at: aPoint) isEmpty ifTrue:[
+			InsectsPos removeKey: aPoint.
+		].
+	].
+
+	"remove the insect from the ground."
+	self getTMASimulationEventsNotifier insectDead: insect.
+	
+	"Tell the insect that he is dead."
+]
+
 { #category : #'component life cycle' }
 MASimulationManager >> componentActivate [ 
 
