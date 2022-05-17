@@ -106,7 +106,7 @@ MAAnt >> position: aPoint [
 
 	position ~= aPoint ifFalse:[^self]. 
 	position := aPoint.
-	self getTMAPositionEventsNotifier positionChanged: aPoint for: self.
+	self getTMAPositionEventsNotifier positionChanged: position for: self.
 	
 	
 ]

@@ -29,6 +29,10 @@ TMASimulationEvents >> insectBorn: anInsect [
 TMASimulationEvents >> paused [
 ]
 
+{ #category : #events }
+TMASimulationEvents >> positionChanged: aPoint for: aModelObject [
+]
+
 { #category : #'events - lifecycle' }
 TMASimulationEvents >> simulationStepSent [
 ]

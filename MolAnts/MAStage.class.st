@@ -56,7 +56,10 @@ MAStage >> computeStageFor: anAnt [
 MAStage >> doSimulationStepFor: anAnt [
 
 	self computeStageFor: anAnt.
-	self getRole doSimulationStepFor: anAnt.
+	
+	self getStageName = #adult ifTrue:[
+		self getRole doSimulationStepFor: anAnt.
+	].
 ]
 
 { #category : #role }

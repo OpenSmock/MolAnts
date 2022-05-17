@@ -1,8 +1,8 @@
 Class {
 	#name : #MAGround,
 	#superclass : #BlElement,
-	#traits : 'MolComponentImpl + TMAGroundType + TMAPositionEvents + TMASimulationEvents',
-	#classTraits : 'MolComponentImpl classTrait + TMAGroundType classTrait + TMAPositionEvents classTrait + TMASimulationEvents classTrait',
+	#traits : 'MolComponentImpl + TMAGroundType + TMASimulationEvents',
+	#classTraits : 'MolComponentImpl classTrait + TMAGroundType classTrait + TMASimulationEvents classTrait',
 	#instVars : [
 		'mySpace'
 	],
@@ -15,6 +15,7 @@ MAGround >> ant: aModelObject changeRole: aSymbol [
 	aSymbol = #queen ifTrue:[
 		self childWithId: aModelObject componentName ifFound: [ :e |
 			e background: Color pink.
+			e size: 5@5.
 		].
 	].
 
@@ -62,7 +63,6 @@ MAGround >> antDead: anAnt [
 MAGround >> componentActivate [
 	
 	self getTMASimulationEventsSubscriber subscribe: self.
-	self getTMAPositionEventsSubscriber subscribe: self.
 	
 	mySpace := self openInNewSpace extent: (MASimulationManager simulationWidth + 5)@(MASimulationManager simulationWidth + 5).
 ]
@@ -70,7 +70,6 @@ MAGround >> componentActivate [
 { #category : #'life cycle' }
 MAGround >> componentPassivate [
 	
-	self getTMAPositionEventsSubscriber unsubscribe: self.
 	self getTMASimulationEventsSubscriber unsubscribe: self.
 ]
 
@@ -80,18 +79,6 @@ MAGround >> componentRemove [
 	
 	self stopped.
 	mySpace close.
-]
-
-{ #category : #'component accessing' }
-MAGround >> getTMAPositionEventsSubscriber [
-	| eventsSymbol eventsSubscriber itf |
-	itf := TMAPositionEvents.
-	eventsSymbol := self eventsSubscribers at: itf ifAbsent: [^MolNotFoundEventsSubscriber new interface: itf name: nil].
-	eventsSymbol isCollection
-	 	ifTrue: 
-			[eventsSubscriber := MolComponentManager default locatorServices 
-						searchEventsSubscriberFor: TMAPositionEvents named: eventsSymbol ]. 
-	^eventsSubscriber
 ]
 
 { #category : #'component accessing' }
@@ -114,7 +101,7 @@ MAGround >> initialize [
 			c horizontal matchParent. 
 			c vertical matchParent 
 	].
-	self background: Color brown.
+	self background: Color brown twiceLighter.
 ]
 
 { #category : #'events - lifecycle' }

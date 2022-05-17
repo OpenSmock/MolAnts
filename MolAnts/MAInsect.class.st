@@ -62,7 +62,10 @@ MAInsect >> position [
 { #category : #'life cycle' }
 MAInsect >> position: aPoint [
 
+	| oldPos |
+	
 	position ~= aPoint ifFalse:[^self]. 
+	oldPos := position.
 	position := aPoint.
 	
 	(position x < 0) ifTrue: [
@@ -78,7 +81,7 @@ MAInsect >> position: aPoint [
 		position := (position x)@(MASimulationManager simulationWidth)
 	].
 	
-	self getTMAPositionEventsNotifier positionChanged: aPoint for: self.
+	self getTMAPositionEventsNotifier positionChangedFor: self oldPos: oldPos newPos: position.
 	
 	
 ]
