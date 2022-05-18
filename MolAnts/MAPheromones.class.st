@@ -13,7 +13,7 @@ Class {
 { #category : #accessing }
 MAPheromones class >> maxIntensity [
 
-	^ 50.
+	^ 100.
 ]
 
 { #category : #'life cycle' }
@@ -57,7 +57,7 @@ MAPheromones >> doSimulationStep [
 		].
 	].
 	
-	(compt % 20 = 0) ifTrue: [
+	(compt % 10 = 0) ifTrue: [
 		self getTMAPheromoneEventsNotifier pheromoneUpdate: pheromonesDict.
 	].
 ]

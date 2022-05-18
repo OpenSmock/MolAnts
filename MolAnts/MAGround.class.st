@@ -151,14 +151,10 @@ MAGround >> insectDead: anInsect [
 MAGround >> pheromoneBorn: aPoint [
 
 	| pheromoneView |
-	pheromoneView := BlElement new.
-	pheromoneView id: (aPoint x printString , #@ , aPoint y printString) asSymbol.
-	pheromoneView geometry: BlCircleGeometry new.
-	pheromoneView background: Color blue.
-	pheromoneView relocate: aPoint.
-	pheromoneView size: 3@3.
-	pheromoneView opacity: 1.0.
-	pheromoneView zIndex: 1.
+	pheromoneView := BlPheromone new.
+	pheromoneView id:(aPoint x printString, #@ , aPoint y printString) asSymbol.
+	pheromoneView intensity: 1.0.
+	pheromoneView location: aPoint.
 	self addChild: pheromoneView.
 ]
 
@@ -175,7 +171,7 @@ MAGround >> pheromoneUpdate: aDictionary [
 
 	aDictionary keysDo: [ :each | 
 		self childWithId: ((each x printString , #@ , each y printString) asSymbol) ifFound: [ :e |
-			e opacity: ((aDictionary at: each)/MAPheromones maxIntensity).	 
+			e intensity: ((aDictionary at: each)/MAPheromones maxIntensity).	 
 		].
 	].
 
