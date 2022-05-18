@@ -122,10 +122,10 @@ MAStage >> isAlive [
 ]
 
 { #category : #role }
-MAStage >> moveFrom: aPosition [
+MAStage >> moveFrom: anAnt [
 
-	self getStageName ~= #adult ifTrue:[^aPosition].
-	^ (self getRole moveFrom: aPosition).
+	self getStageName ~= #adult ifTrue:[^anAnt position].
+	^ (self getRole moveFrom: anAnt).
 
 ]
 

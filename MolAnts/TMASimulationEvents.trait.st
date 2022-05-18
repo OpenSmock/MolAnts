@@ -29,20 +29,12 @@ TMASimulationEvents >> insectBorn: anInsect [
 TMASimulationEvents >> insectDead: anInsect [
 ]
 
-{ #category : #'events - lifecycle' }
-TMASimulationEvents >> intensityChanged: anInteger for: aPheromone [
-]
-
 { #category : #'events - control' }
 TMASimulationEvents >> paused [
 ]
 
 { #category : #'events - lifecycle' }
-TMASimulationEvents >> pheromoneBorn: aPheromone [
-]
-
-{ #category : #'events - lifecycle' }
-TMASimulationEvents >> pheromoneDead: aPheromone [
+TMASimulationEvents >> pheromoneNew: aPoint [
 ]
 
 { #category : #events }

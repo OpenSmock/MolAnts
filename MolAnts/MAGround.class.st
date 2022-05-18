@@ -1,13 +1,19 @@
 Class {
 	#name : #MAGround,
 	#superclass : #BlElement,
-	#traits : 'MolComponentImpl + TMAGroundType + TMASimulationEvents',
-	#classTraits : 'MolComponentImpl classTrait + TMAGroundType classTrait + TMASimulationEvents classTrait',
+	#traits : 'MolComponentImpl + TMAGroundType + TMASimulationEvents + TMAPheromoneEvents',
+	#classTraits : 'MolComponentImpl classTrait + TMAGroundType classTrait + TMASimulationEvents classTrait + TMAPheromoneEvents classTrait',
 	#instVars : [
 		'mySpace'
 	],
 	#category : #'MolAnts-View'
 }
+
+{ #category : #'accessing - events' }
+MAGround class >> consumedComponentEvents [
+	<componentContract>
+	^ {TMASimulationEvents . TMAPheromoneEvents}
+]
 
 { #category : #'events - lifecycle' }
 MAGround >> ant: aModelObject changeRole: aSymbol [
@@ -63,6 +69,7 @@ MAGround >> antDead: anAnt [
 MAGround >> componentActivate [
 	
 	self getTMASimulationEventsSubscriber subscribe: self.
+	self getTMAPheromoneEventsSubscriber subscribe: self.
 	
 	mySpace := self openInNewSpace extent: (MASimulationManager simulationWidth + 5)@(MASimulationManager simulationWidth + 5).
 ]
@@ -71,6 +78,7 @@ MAGround >> componentActivate [
 MAGround >> componentPassivate [
 	
 	self getTMASimulationEventsSubscriber unsubscribe: self.
+	self getTMAPheromoneEventsSubscriber unsubscribe: self.
 ]
 
 { #category : #'life cycle' }
@@ -79,6 +87,18 @@ MAGround >> componentRemove [
 	
 	self stopped.
 	mySpace close.
+]
+
+{ #category : #'component accessing' }
+MAGround >> getTMAPheromoneEventsSubscriber [
+	| eventsSymbol eventsSubscriber itf |
+	itf := TMAPheromoneEvents.
+	eventsSymbol := self eventsSubscribers at: itf ifAbsent: [^MolNotFoundEventsSubscriber new interface: itf name: nil].
+	eventsSymbol isCollection
+	 	ifTrue: 
+			[eventsSubscriber := MolComponentManager default locatorServices 
+						searchEventsSubscriberFor: TMAPheromoneEvents named: eventsSymbol ]. 
+	^eventsSubscriber
 ]
 
 { #category : #'component accessing' }
@@ -127,36 +147,38 @@ MAGround >> insectDead: anInsect [
 
 ]
 
-{ #category : #'events - lifecycle' }
-MAGround >> intensityChanged: anInteger for: aPheromone [
-
-	self childWithId: aPheromone componentName ifFound: [ :e |
-		e opacity: (aPheromone intensity/MAPheromone maxIntensity).	
-	].
-
-]
-
-{ #category : #'events - lifecycle' }
-MAGround >> pheromoneBorn: aPheromone [
+{ #category : #events }
+MAGround >> pheromoneBorn: aPoint [
 
 	| pheromoneView |
 	pheromoneView := BlElement new.
-	pheromoneView id: aPheromone componentName.
+	pheromoneView id: (aPoint x printString , #@ , aPoint y printString) asSymbol.
 	pheromoneView geometry: BlCircleGeometry new.
 	pheromoneView background: Color blue.
-	pheromoneView relocate: aPheromone position.
+	pheromoneView relocate: aPoint.
 	pheromoneView size: 3@3.
 	pheromoneView opacity: 1.0.
 	pheromoneView zIndex: 1.
 	self addChild: pheromoneView.
 ]
 
-{ #category : #'events - lifecycle' }
-MAGround >> pheromoneDead: aPheromone [
+{ #category : #events }
+MAGround >> pheromoneDead: aPoint [
 
-	self childWithId: aPheromone componentName ifFound: [ :e |
+	self childWithId: ((aPoint x printString , #@ , aPoint y printString) asSymbol) ifFound: [ :e |
 		self removeChild: e.
 	].
+]
+
+{ #category : #events }
+MAGround >> pheromoneUpdate: aDictionary [
+
+	aDictionary keysDo: [ :each | 
+		self childWithId: ((each x printString , #@ , each y printString) asSymbol) ifFound: [ :e |
+			e opacity: ((aDictionary at: each)/MAPheromones maxIntensity).	 
+		].
+	].
+
 
 ]
 

@@ -1,67 +1,74 @@
 Class {
-	#name : #MAPheromone,
+	#name : #MAPheromones,
 	#superclass : #Object,
 	#traits : 'MolComponentImpl + TMAPheromonesType + TMASimulationEvents',
 	#classTraits : 'MolComponentImpl classTrait + TMAPheromonesType classTrait + TMASimulationEvents classTrait',
 	#instVars : [
-		'position',
-		'intensity'
+		'pheromonesDict',
+		'compt'
 	],
 	#category : #'MolAnts-Model'
 }
 
 { #category : #accessing }
-MAPheromone class >> maxIntensity [
+MAPheromones class >> maxIntensity [
 
 	^ 50.
 ]
 
-{ #category : #adding }
-MAPheromone >> addIntensity [
-
-	intensity := self class maxIntensity.
-]
-
 { #category : #'life cycle' }
-MAPheromone >> componentActivate [
-		
+MAPheromones >> componentActivate [
+
 	self getTMASimulationEventsSubscriber subscribe: self.
 ]
 
 { #category : #'life cycle' }
-MAPheromone >> componentInitialize [
+MAPheromones >> componentInitialize [
 	"here write the code corresponding to component initialisation phase"
 	
-	position := 0@0.
-	intensity := self class maxIntensity.
+	
+	pheromonesDict := Dictionary new.
+	compt := 0.
 ]
 
 { #category : #'life cycle' }
-MAPheromone >> componentPassivate [
-		
+MAPheromones >> componentPassivate [
+
 	self getTMASimulationEventsSubscriber unsubscribe: self.
 ]
 
-{ #category : #'events - lifecycle' }
-MAPheromone >> doSimulationStep [
+{ #category : #'life cycle' }
+MAPheromones >> componentRemove [
 
-	intensity > 0 ifTrue:[
-		intensity := intensity - 1.
-		intensity <= 0 ifTrue: [
-			self getTMAPheromoneEventsNotifier intensityNilFor: self.
-			^ self.
+	pheromonesDict := nil.
+	compt := 0.
+]
+
+{ #category : #'events - lifecycle' }
+MAPheromones >> doSimulationStep [
+
+	compt := compt + 1.
+	
+	pheromonesDict keysDo: [ :each | 
+		pheromonesDict at: each update: [ :v | v-1 ].
+		(pheromonesDict at: each) <= 0 ifTrue: [ 
+			self getTMAPheromoneEventsNotifier pheromoneDead: each.
+			pheromonesDict removeKey: each.
 		].
-		self getTMAPheromoneEventsNotifier intensityChanged: intensity for: self.
+	].
+	
+	(compt % 20 = 0) ifTrue: [
+		self getTMAPheromoneEventsNotifier pheromoneUpdate: pheromonesDict.
 	].
 ]
 
 { #category : #'component accessing' }
-MAPheromone >> getTMAPheromoneEventsNotifier [
+MAPheromones >> getTMAPheromoneEventsNotifier [
 	^self eventsNotifiers at: TMAPheromoneEvents ifAbsent: [^MolNotFoundEventsNotifier new interface: TMAPheromoneEvents name: nil].
 ]
 
 { #category : #'component accessing' }
-MAPheromone >> getTMASimulationEventsSubscriber [
+MAPheromones >> getTMASimulationEventsSubscriber [
 	| eventsSymbol eventsSubscriber itf |
 	itf := TMASimulationEvents.
 	eventsSymbol := self eventsSubscribers at: itf ifAbsent: [^MolNotFoundEventsSubscriber new interface: itf name: nil].
@@ -72,26 +79,25 @@ MAPheromone >> getTMASimulationEventsSubscriber [
 	^eventsSubscriber
 ]
 
-{ #category : #accessing }
-MAPheromone >> intensity [
+{ #category : #'events - lifecycle' }
+MAPheromones >> pheromoneNew: aPoint [
 
-	^ intensity
+		(pheromonesDict includesKey: aPoint) ifFalse:[
+			pheromonesDict add: (aPoint -> self class maxIntensity).
+			self getTMAPheromoneEventsNotifier pheromoneBorn: aPoint.
+		] ifTrue: [
+			pheromonesDict at: aPoint  update: [:v | v - v + self class maxIntensity].
+		].
 ]
 
 { #category : #accessing }
-MAPheromone >> position [
+MAPheromones >> pheromonesDict [
 
-	^ position
-]
-
-{ #category : #accessing }
-MAPheromone >> position: anObject [
-
-	position := anObject
+	^ pheromonesDict
 ]
 
 { #category : #'events - lifecycle' }
-MAPheromone >> simulationStepSent [
+MAPheromones >> simulationStepSent [
 
 	self doSimulationStep.
 ]

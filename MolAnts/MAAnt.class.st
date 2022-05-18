@@ -1,8 +1,8 @@
 Class {
 	#name : #MAAnt,
 	#superclass : #Object,
-	#traits : 'MolComponentImpl + TMAAntsType + TMASimulationServices + TMASimulationEvents + TMAAntServices',
-	#classTraits : 'MolComponentImpl classTrait + TMAAntsType classTrait + TMASimulationServices classTrait + TMASimulationEvents classTrait + TMAAntServices classTrait',
+	#traits : 'MolComponentImpl + TMAAntsType + TMASimulationEvents + TMAAntServices',
+	#classTraits : 'MolComponentImpl classTrait + TMAAntsType classTrait + TMASimulationEvents classTrait + TMAAntServices classTrait',
 	#instVars : [
 		'position',
 		'ageInMs'
@@ -56,14 +56,20 @@ MAAnt >> doSimulationStep [
 	self getStage isAlive ifTrue: [ 
 		ageInMs := ageInMs + MASimulationManager simulationStepDurationInMs.
 		self getStage doSimulationStepFor: self.
-		self position: (self getStage moveFrom: self position).  
+		self position: (self getStage moveFrom: self).  
 	].
 ]
 
 { #category : #services }
 MAAnt >> getInsects [
 
-	^ self getTMASimulationServicesProvider InsectsPos. 
+	^ self getTMASimulationServicesProvider insectsPos. 
+]
+
+{ #category : #services }
+MAAnt >> getPheromonesDict [
+
+	^ self getTMASimulationServicesProvider getPheromonesDict.
 ]
 
 { #category : #'component accessing' }

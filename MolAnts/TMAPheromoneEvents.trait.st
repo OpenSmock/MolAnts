@@ -6,9 +6,13 @@ Trait {
 }
 
 { #category : #events }
-TMAPheromoneEvents >> intensityChanged: anInteger for: aPheromone [
+TMAPheromoneEvents >> pheromoneBorn: aPoint [
 ]
 
 { #category : #events }
-TMAPheromoneEvents >> intensityNilFor: aPheromone [
+TMAPheromoneEvents >> pheromoneDead: aPoint [
+]
+
+{ #category : #events }
+TMAPheromoneEvents >> pheromoneUpdate: aDictionary [
 ]

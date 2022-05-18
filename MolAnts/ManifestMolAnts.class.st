@@ -25,6 +25,11 @@ ManifestMolAnts class >> ruleGuardingClauseRuleV1FalsePositive [
 ]
 
 { #category : #'code-critics' }
+ManifestMolAnts class >> ruleLongMethodsRuleV1FalsePositive [
+	^ #(#(#(#RGMethodDefinition #(#MAWorker #moveFrom: #false)) #'2022-05-18T11:02:23.093201+02:00') )
+]
+
+{ #category : #'code-critics' }
 ManifestMolAnts class >> ruleReGuardClauseRuleV1FalsePositive [
 	^ #(#(#(#RGPackageDefinition #(#MolAnts)) #'2022-05-13T07:29:44.66026+01:00') )
 ]

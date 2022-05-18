@@ -29,11 +29,11 @@ MAFighter >> doSimulationStepFor: anAnt [
 ]
 
 { #category : #role }
-MAFighter >> moveFrom: aPosition [
+MAFighter >> moveFrom: anAnt [
 
 	| newPos AntHillPos |
 	
-	newPos := aPosition + (((Random new next * 10 - 5) rounded) @ ((Random new next * 10 - 5) rounded)).
+	newPos := anAnt position + (((Random new next * 10 - 5) rounded) @ ((Random new next * 10 - 5) rounded)).
 	AntHillPos := MASimulationManager simulationAntHillPosition.
 		
 	(newPos x < (AntHillPos x - 50)) ifTrue: [
