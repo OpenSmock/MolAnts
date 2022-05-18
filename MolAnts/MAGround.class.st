@@ -46,7 +46,7 @@ MAGround >> antBorn: anAnt [
 	antView background: Color white.
 	antView relocate: anAnt position.
 	antView size: 3@3.
-	
+	antView zIndex: 3.
 	self addChild: antView.
 ]
 
@@ -107,15 +107,15 @@ MAGround >> initialize [
 { #category : #'events - lifecycle' }
 MAGround >> insectBorn: anInsect [
 
-	| insecttView |
-	insecttView := BlElement new.
-	insecttView id: anInsect componentName.
-	insecttView geometry: BlCircleGeometry new.
-	insecttView background: Color black.
-	insecttView relocate: anInsect position.
-	insecttView size: 3@3.
-	
-	self addChild: insecttView.
+	| inscetView |
+	inscetView := BlElement new.
+	inscetView id: anInsect componentName.
+	inscetView geometry: BlCircleGeometry new.
+	inscetView background: Color black.
+	inscetView relocate: anInsect position.
+	inscetView size: 3@3.
+	inscetView zIndex: 2.
+	self addChild: inscetView.
 ]
 
 { #category : #'events - lifecycle' }
@@ -123,6 +123,39 @@ MAGround >> insectDead: anInsect [
 
 	self childWithId: anInsect componentName ifFound: [ :e |
 		e background: Color red.	
+	].
+
+]
+
+{ #category : #'events - lifecycle' }
+MAGround >> intensityChanged: anInteger for: aPheromone [
+
+	self childWithId: aPheromone componentName ifFound: [ :e |
+		e opacity: (aPheromone intensity/MAPheromone maxIntensity).	
+	].
+
+]
+
+{ #category : #'events - lifecycle' }
+MAGround >> pheromoneBorn: aPheromone [
+
+	| pheromoneView |
+	pheromoneView := BlElement new.
+	pheromoneView id: aPheromone componentName.
+	pheromoneView geometry: BlCircleGeometry new.
+	pheromoneView background: Color blue.
+	pheromoneView relocate: aPheromone position.
+	pheromoneView size: 3@3.
+	pheromoneView opacity: 1.0.
+	pheromoneView zIndex: 1.
+	self addChild: pheromoneView.
+]
+
+{ #category : #'events - lifecycle' }
+MAGround >> pheromoneDead: aPheromone [
+
+	self childWithId: aPheromone componentName ifFound: [ :e |
+		self removeChild: e.
 	].
 
 ]

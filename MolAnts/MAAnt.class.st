@@ -124,9 +124,12 @@ MAAnt >> position: aPoint [
 
 	position ~= aPoint ifFalse:[^self]. 
 	position := aPoint.
-	self getTMAPositionEventsNotifier positionChanged: position for: self.
 	
-	
+	(self getStage getRoleName) = #worker ifTrue: [ 
+		self getTMAPositionEventsNotifier workerPositionChanged: position for: self.
+	] ifFalse: [
+		self getTMAPositionEventsNotifier positionChanged: position for: self.
+	].
 ]
 
 { #category : #stage }

@@ -48,6 +48,7 @@ MAFighter >> moveFrom: aPosition [
 	(newPos y > (AntHillPos y + 50)) ifTrue: [ 
 		newPos := (newPos x)@(AntHillPos y + 50)
 	].
-		
+
+	
 	^ newPos.
 ]

@@ -1,18 +1,26 @@
 Class {
 	#name : #MASimulationManager,
 	#superclass : #MolAbstractComponentImpl,
-	#traits : 'TMASimulationManagerType + TMAStageEvents + TMASimulationServices + TMARoleEvents + TMAPositionEvents',
-	#classTraits : 'TMASimulationManagerType classTrait + TMAStageEvents classTrait + TMASimulationServices classTrait + TMARoleEvents classTrait + TMAPositionEvents classTrait',
+	#traits : 'TMASimulationManagerType + TMAStageEvents + TMASimulationServices + TMARoleEvents + TMAPositionEvents + TMAPheromoneEvents',
+	#classTraits : 'TMASimulationManagerType classTrait + TMAStageEvents classTrait + TMASimulationServices classTrait + TMARoleEvents classTrait + TMAPositionEvents classTrait + TMAPheromoneEvents classTrait',
 	#instVars : [
 		'simulationThread',
 		'ground',
 		'isAntHillCreated',
 		'isInsectsCreated',
 		'nbAnt',
-		'InsectsPos'
+		'InsectsPos',
+		'nbPheromone',
+		'pheromonesPos'
 	],
 	#category : #'MolAnts-Core'
 }
+
+{ #category : #'accessing - events' }
+MASimulationManager class >> consumedComponentEvents [
+	<componentContract>
+	^ {TMAStageEvents . TMARoleEvents . TMAPositionEvents . TMAPheromoneEvents}
+]
 
 { #category : #properties }
 MASimulationManager class >> simulationAntHillPosition [
@@ -86,6 +94,7 @@ MASimulationManager >> componentActivate [
 	self getTMAStageEventsSubscriber subscribe: self.
 	self getTMARoleEventsSubscriber subscribe: self.
 	self getTMAPositionEventsSubscriber subscribe: self.
+	self getTMAPheromoneEventsSubscriber subscribe: self.
 	
 	ground := MAGround start: 'Ground'. 
 	self start.
@@ -102,6 +111,8 @@ MASimulationManager >> componentInitialize [
 	isInsectsCreated := false.
 	nbAnt := 0.
 	InsectsPos := Dictionary new.
+	nbPheromone := 0.
+	pheromonesPos := Dictionary new.
 ]
 
 { #category : #'component life cycle' }
@@ -110,6 +121,7 @@ MASimulationManager >> componentPassivate [
 	self getTMAStageEventsSubscriber unsubscribe: self.
 	self getTMARoleEventsSubscriber unsubscribe: self.
 	self getTMAPositionEventsSubscriber unsubscribe: self.
+	self getTMAPheromoneEventsSubscriber unsubscribe: self.
 	
 	super componentPassivate.
 
@@ -194,6 +206,41 @@ MASimulationManager >> createInsects [
 	
 ]
 
+{ #category : #private }
+MASimulationManager >> createPheromone: aPoint [
+	
+	| name pheromone |
+
+	"Add the insect to the dictionary of their positions."
+		(pheromonesPos includesKey: aPoint) ifFalse:[ 
+			nbPheromone := nbPheromone + 1.
+			name := ('Pheromone', nbPheromone printString) asSymbol.
+			pheromone := MAPheromone start: name.
+			pheromone position: aPoint.
+			pheromonesPos add: (aPoint -> pheromone ).
+			
+			"Adding events producer into SimulationMManager"
+			self forEvents: TMAPheromoneEvents addProducer: name.
+			
+			"Notify Pheromone creation"
+			self getTMASimulationEventsNotifier pheromoneBorn: pheromone.
+		] ifTrue: [
+			(pheromonesPos at: aPoint) addIntensity.
+		].
+]
+
+{ #category : #'component accessing' }
+MASimulationManager >> getTMAPheromoneEventsSubscriber [
+	| eventsSymbol eventsSubscriber itf |
+	itf := TMAPheromoneEvents.
+	eventsSymbol := self eventsSubscribers at: itf ifAbsent: [^MolNotFoundEventsSubscriber new interface: itf name: nil].
+	eventsSymbol isCollection
+	 	ifTrue: 
+			[eventsSubscriber := MolComponentManager default locatorServices 
+						searchEventsSubscriberFor: TMAPheromoneEvents named: eventsSymbol ]. 
+	^eventsSubscriber
+]
+
 { #category : #'component accessing' }
 MASimulationManager >> getTMAPositionEventsSubscriber [
 	| eventsSymbol eventsSubscriber itf |
@@ -233,6 +280,19 @@ MASimulationManager >> getTMAStageEventsSubscriber [
 			[eventsSubscriber := MolComponentManager default locatorServices 
 						searchEventsSubscriberFor: TMAStageEvents named: eventsSymbol ]. 
 	^eventsSubscriber
+]
+
+{ #category : #events }
+MASimulationManager >> intensityChanged: anInteger for: aPheromone [
+
+	self getTMASimulationEventsNotifier intensityChanged: anInteger for: aPheromone.
+]
+
+{ #category : #events }
+MASimulationManager >> intensityNilFor: aPheromone [
+	
+	self getTMASimulationEventsNotifier pheromoneDead: aPheromone.
+	self removePheromone: aPheromone.
 ]
 
 { #category : #accessing }
@@ -321,7 +381,6 @@ MASimulationManager >> removeAntHill [
 		name := ('Ant', e printString) asSymbol.
 		MAAnt stop: name.
 	].
-
 	nbAnt := 0.
 	self isAntHillCreated: false.
 ]
@@ -335,9 +394,34 @@ MASimulationManager >> removeInsects [
 		name := ('Insect', e printString) asSymbol.
 		MAInsect stop: name.
 	].
-	
+	InsectsPos := nil.
 	self isInsectsCreated: false.
-	InsectsPos := nil
+]
+
+{ #category : #private }
+MASimulationManager >> removePheromone: aPheromone [
+	"Delete one pheromone"
+	| name |
+	
+	pheromonesPos removeKey: aPheromone position.
+	name := aPheromone componentName.
+	MAPheromone stop: name.
+	
+	
+]
+
+{ #category : #private }
+MASimulationManager >> removePheromones [
+
+	"Delete nbPheromone pheromones"
+		
+	pheromonesPos do: [ :each |
+		MAPheromone stop: (each componentName).
+	].
+	
+	nbPheromone := 0.
+	pheromonesPos := nil.
+	
 ]
 
 { #category : #events }
@@ -397,7 +481,8 @@ MASimulationManager >> stop [
 	
 	self isAntHillCreated ifTrue:[	self removeAntHill ].
 	self isInsectsCreated ifTrue:[	self removeInsects ].
-		
+	self removePheromones.
+	
 	isRunning := false.
 	
 	self getTMASimulationEventsNotifier stopped.
@@ -410,4 +495,11 @@ MASimulationManager >> stopSimulationLoop [
 	simulationThread terminate.
 	simulationThread := nil.	
 	
+]
+
+{ #category : #events }
+MASimulationManager >> workerPositionChanged: aPoint for: aModelObject [
+
+	self createPheromone: aPoint.
+	self getTMASimulationEventsNotifier positionChanged: aPoint for: aModelObject.
 ]

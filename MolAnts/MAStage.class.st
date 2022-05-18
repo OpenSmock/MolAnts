@@ -68,6 +68,12 @@ MAStage >> getRole [
 	^ role.
 ]
 
+{ #category : #role }
+MAStage >> getRoleName [
+
+	^ role getRoleName.
+]
+
 { #category : #'component accessing' }
 MAStage >> getTMARoleServicesProvider [
 	| servicesSymbol servicesProvider itf |

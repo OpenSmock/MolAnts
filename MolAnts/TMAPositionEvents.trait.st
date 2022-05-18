@@ -12,3 +12,7 @@ TMAPositionEvents >> positionChanged: aPoint for: aModelObject [
 { #category : #events }
 TMAPositionEvents >> positionChangedFor: aModelObject oldPos: aPoint newPos: anotherPoint [
 ]
+
+{ #category : #events }
+TMAPositionEvents >> workerPositionChanged: aPoint for: aModelObject [
+]
