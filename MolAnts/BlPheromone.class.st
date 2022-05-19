@@ -43,6 +43,7 @@ BlPheromone >> drawOnSpartaCanvas: aCanvas [
 BlPheromone >> initialize [
 
 	super initialize.
+	
 	location := 0@0.
 	intensity := 0.
 ]
@@ -69,4 +70,14 @@ BlPheromone >> location [
 BlPheromone >> location: anObject [
 
 	location := anObject
+]
+
+{ #category : #accessing }
+BlPheromone >> onSessionChanged: aNewSession [
+	"Is sent when a Session is changed, for example if the program is closed and re-opened.
+	When this happens the external heap memory (FFI Objects) is no longer valid.
+	If an element relies on an external memory it is a good place to trigger an update here"
+	children ifNotNil:[
+		self childrenDo: [ :eachChild | eachChild onSessionChanged: aNewSession ]
+	].
 ]

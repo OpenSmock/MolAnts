@@ -147,10 +147,19 @@ MAGround >> insectDead: anInsect [
 
 ]
 
+{ #category : #'events - lifecycle' }
+MAGround >> insectEated: anInsect [
+
+	self childWithId: anInsect componentName ifFound: [ :e |
+		self removeChild: e.	
+	].
+]
+
 { #category : #events }
 MAGround >> pheromoneBorn: aPoint [
 
 	| pheromoneView |
+	
 	pheromoneView := BlPheromone new.
 	pheromoneView id:(aPoint x printString, #@ , aPoint y printString) asSymbol.
 	pheromoneView intensity: 1.0.
@@ -190,4 +199,20 @@ MAGround >> positionChanged: aPoint for: aModelObject [
 MAGround >> stopped [
 
 	self removeChildren 	
+]
+
+{ #category : #'events - lifecycle' }
+MAGround >> workerDeliver: anAnt [
+
+	self childWithId: anAnt componentName ifFound: [ :e |
+		e background: (Color fromHexString: '#DFFF00').	
+	].
+]
+
+{ #category : #'events - lifecycle' }
+MAGround >> workerEat: anAnt [
+
+	self childWithId: anAnt componentName ifFound: [ :e |
+		e background: Color orange.	
+	].
 ]

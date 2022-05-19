@@ -73,11 +73,6 @@ MAAnt >> getPheromonesDict [
 ]
 
 { #category : #'component accessing' }
-MAAnt >> getTMAPositionEventsNotifier [
-	^self eventsNotifiers at: TMAPositionEvents ifAbsent: [^MolNotFoundEventsNotifier new interface: TMAPositionEvents name: nil].
-]
-
-{ #category : #'component accessing' }
 MAAnt >> getTMASimulationEventsSubscriber [
 	| eventsSymbol eventsSubscriber itf |
 	itf := TMASimulationEvents.
@@ -130,12 +125,6 @@ MAAnt >> position: aPoint [
 
 	position ~= aPoint ifFalse:[^self]. 
 	position := aPoint.
-	
-	(self getStage getRoleName) = #worker ifTrue: [ 
-		self getTMAPositionEventsNotifier workerPositionChanged: position for: self.
-	] ifFalse: [
-		self getTMAPositionEventsNotifier positionChanged: position for: self.
-	].
 ]
 
 { #category : #stage }

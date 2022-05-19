@@ -10,5 +10,25 @@ TMARoleEvents >> ant: anAnt eatAt: aPoint [
 ]
 
 { #category : #events }
+TMARoleEvents >> positionChanged: aPoint for: anAnt [
+]
+
+{ #category : #events }
 TMARoleEvents >> queenLaid [
+]
+
+{ #category : #events }
+TMARoleEvents >> worker: anAnt eatAt: aPoint [
+]
+
+{ #category : #events }
+TMARoleEvents >> workerDeliver: anAnt [
+]
+
+{ #category : #events }
+TMARoleEvents >> workerExploringPositionChanged: aPoint for: anAnt [
+]
+
+{ #category : #events }
+TMARoleEvents >> workerReturningPositionChanged: aPoint for: anAnt [
 ]

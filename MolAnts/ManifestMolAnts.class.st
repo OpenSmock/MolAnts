@@ -10,6 +10,11 @@ Class {
 }
 
 { #category : #'code-critics' }
+ManifestMolAnts class >> ruleAssignmentInIfTrueRuleV1FalsePositive [
+	^ #(#(#(#RGMethodDefinition #(#MAWorker #moveFrom: #false)) #'2022-05-19T11:19:29.69331+02:00') #(#(#RGMethodDefinition #(#MAWorker #avoidPheromones:for: #false)) #'2022-05-19T13:59:34.536525+02:00') )
+]
+
+{ #category : #'code-critics' }
 ManifestMolAnts class >> ruleCascadedNextPutAllsRuleV1FalsePositive [
 	^ #(#(#(#RGClassDefinition #(#MASimulationManager)) #'2022-05-16T10:44:22.139683+01:00') )
 ]

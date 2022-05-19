@@ -368,11 +368,13 @@ MASimulationManager >> removeAntHill [
 { #category : #private }
 MASimulationManager >> removeInsects [
 
-	"Delete 100 insects"
-	1 to: 50 do:[ :e | | name |
-		"Delete insect"
-		name := ('Insect', e printString) asSymbol.
-		MAInsect stop: name.
+	"Delete insects"
+	insectsPos do: [ :each | | name |
+		each do: [ :insect |
+			"Delete insect"
+			name := insect componentName.
+			MAInsect stop: name.
+		].
 	].
 	insectsPos := nil.
 	self isInsectsCreated: false.
@@ -459,8 +461,41 @@ MASimulationManager >> stopSimulationLoop [
 ]
 
 { #category : #events }
-MASimulationManager >> workerPositionChanged: aPoint for: aModelObject [
+MASimulationManager >> worker: anAnt eatAt: aPoint [
+
+	| insect |
+	
+	"remove the insect in the dictionary."
+	(insectsPos includesKey: aPoint) ifTrue: [
+		insect := (insectsPos at: aPoint) removeFirst.
+		(insectsPos at: aPoint) isEmpty ifTrue:[
+			insectsPos removeKey: aPoint.
+		].
+	].
+
+	"remove the insect from the ground."
+	self getTMASimulationEventsNotifier insectEated: insect.
+	self getTMASimulationEventsNotifier workerEat: anAnt.
+	"Tell the insect that he is dead."
+	
+	MAInsect stop: insect componentName.
+]
+
+{ #category : #events }
+MASimulationManager >> workerDeliver: anAnt [
+
+	self getTMASimulationEventsNotifier workerDeliver: anAnt.
+]
+
+{ #category : #events }
+MASimulationManager >> workerExploringPositionChanged: aPoint for: anAnt [
 
 	self getTMASimulationEventsNotifier pheromoneNew: aPoint.
-	self getTMASimulationEventsNotifier positionChanged: aPoint for: aModelObject.
+	self getTMASimulationEventsNotifier positionChanged: aPoint for: anAnt.
+]
+
+{ #category : #events }
+MASimulationManager >> workerReturningPositionChanged: aPoint for: anAnt [
+
+	self getTMASimulationEventsNotifier positionChanged: aPoint for: anAnt.
 ]

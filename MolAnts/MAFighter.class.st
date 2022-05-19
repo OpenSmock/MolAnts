@@ -49,6 +49,6 @@ MAFighter >> moveFrom: anAnt [
 		newPos := (newPos x)@(AntHillPos y + 50)
 	].
 
-	
+	self getTMARoleEventsNotifier positionChanged: newPos for: anAnt.
 	^ newPos.
 ]

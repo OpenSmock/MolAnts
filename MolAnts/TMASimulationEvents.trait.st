@@ -29,6 +29,10 @@ TMASimulationEvents >> insectBorn: anInsect [
 TMASimulationEvents >> insectDead: anInsect [
 ]
 
+{ #category : #'events - lifecycle' }
+TMASimulationEvents >> insectEated: anInsect [
+]
+
 { #category : #'events - control' }
 TMASimulationEvents >> paused [
 ]
@@ -51,4 +55,12 @@ TMASimulationEvents >> started [
 
 { #category : #'events - control' }
 TMASimulationEvents >> stopped [
+]
+
+{ #category : #'events - lifecycle' }
+TMASimulationEvents >> workerDeliver: anAnt [
+]
+
+{ #category : #'events - lifecycle' }
+TMASimulationEvents >> workerEat: anAnt [
 ]
