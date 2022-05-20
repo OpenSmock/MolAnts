@@ -41,6 +41,10 @@ TMASimulationEvents >> paused [
 TMASimulationEvents >> pheromoneNew: aPoint [
 ]
 
+{ #category : #'events - lifecycle' }
+TMASimulationEvents >> pheromoneReturnNew: aPoint [
+]
+
 { #category : #events }
 TMASimulationEvents >> positionChanged: aPoint for: aModelObject [
 ]

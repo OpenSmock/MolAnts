@@ -106,7 +106,7 @@ MAStage >> initializeRole [
 		role := MAQueen start: (#role, self componentName asSymbol) asSymbol.
 		^ self.
 	].
-	x<50 ifTrue: [ 
+	x<34 ifTrue: [ 
 		role := MAFighter start: (#role, self componentName asSymbol) asSymbol.
 		^ self.
 	].

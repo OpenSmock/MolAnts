@@ -21,13 +21,16 @@ MAGround >> ant: aModelObject changeRole: aSymbol [
 	aSymbol = #queen ifTrue:[
 		self childWithId: aModelObject componentName ifFound: [ :e |
 			e background: (Color fromHexString: 'e000ff').
-			e size: 5@5.
+			e size: 6@6.
+			e relocate: (aModelObject position - (3@3)).
 		].
 	].
 
 	aSymbol = #fighter ifTrue:[
 		self childWithId: aModelObject componentName ifFound: [ :e |
 			e background: (Color fromHexString: '68ff00').
+			e size: 4@4.
+			e relocate: (aModelObject position - (2@2)).
 		].
 	].
 ]
@@ -37,7 +40,9 @@ MAGround >> ant: aModelObject changeStage: aSymbol [
 	
 	aSymbol = #adult ifTrue:[
 		self childWithId: aModelObject componentName ifFound: [ :e |
-			e background: (Color fromHexString: '#DFFF00').	
+			e background: (Color fromHexString: '#DFFF00').
+			e size: 4@4.
+			e relocate: (aModelObject position - (2@2)).
 		].
 	].
 ]
@@ -49,9 +54,9 @@ MAGround >> antBorn: anAnt [
 	antView := BlElement new.
 	antView id: anAnt componentName.
 	antView geometry: BlCircleGeometry new.
-	antView background: Color white.
-	antView relocate: anAnt position.
-	antView size: 3@3.
+	antView background: Color purple.
+	antView relocate: (anAnt position - (1@1)).
+	antView size: 2@2.
 	antView zIndex: 3.
 	self addChild: antView.
 ]
@@ -67,11 +72,23 @@ MAGround >> antDead: anAnt [
 
 { #category : #'life cycle' }
 MAGround >> componentActivate [
+
+	| antHillView |
 	
 	self getTMASimulationEventsSubscriber subscribe: self.
 	self getTMAPheromoneEventsSubscriber subscribe: self.
 	
 	mySpace := self openInNewSpace extent: (MASimulationManager simulationWidth + 5)@(MASimulationManager simulationWidth + 5).
+	
+
+	antHillView := BlElement new.
+	antHillView id: 'antHill' asSymbol.
+	antHillView geometry: BlCircleGeometry new.
+	antHillView background: Color white.
+	antHillView relocate: (MASimulationManager simulationAntHillPosition - (10@10)).
+	antHillView size: 20@20.
+	antHillView zIndex: 0.
+	self addChild: antHillView.
 ]
 
 { #category : #'life cycle' }
@@ -132,8 +149,8 @@ MAGround >> insectBorn: anInsect [
 	inscetView id: anInsect componentName.
 	inscetView geometry: BlCircleGeometry new.
 	inscetView background: Color black.
-	inscetView relocate: anInsect position.
-	inscetView size: 3@3.
+	inscetView relocate: (anInsect position - (2@2)).
+	inscetView size: 4@4.
 	inscetView zIndex: 2.
 	self addChild: inscetView.
 ]
@@ -176,11 +193,45 @@ MAGround >> pheromoneDead: aPoint [
 ]
 
 { #category : #events }
+MAGround >> pheromoneReturnBorn: aPoint [
+
+	| pheromoneReturnView |
+	
+	pheromoneReturnView := BlPheromone new.
+	pheromoneReturnView type: #return.
+	pheromoneReturnView id:('return', aPoint x printString, #@ , aPoint y printString) asSymbol.
+	pheromoneReturnView intensity: 1.0.
+	pheromoneReturnView location: aPoint.
+	self addChild: pheromoneReturnView.
+]
+
+{ #category : #events }
+MAGround >> pheromoneReturnDead: aPoint [
+
+	self childWithId: (('return', aPoint x printString , #@ , aPoint y printString) asSymbol) ifFound: [ :e |
+		self removeChild: e.
+	].
+]
+
+{ #category : #events }
+MAGround >> pheromoneReturnUpdate: aDictionary [
+
+	aDictionary keysDo: [ :each | 
+		self childWithId: (('return', each x printString , #@ , each y printString) asSymbol) ifFound: [ :e |
+			e intensity: ((aDictionary at: each)/MAPheromones maxIntensity).	 
+		].
+	].
+
+
+]
+
+{ #category : #events }
 MAGround >> pheromoneUpdate: aDictionary [
 
 	aDictionary keysDo: [ :each | 
 		self childWithId: ((each x printString , #@ , each y printString) asSymbol) ifFound: [ :e |
-			e intensity: ((aDictionary at: each)/MAPheromones maxIntensity).	 
+			e intensity: ((aDictionary at: each)/MAPheromones maxIntensity).	
+			e needReDraw: true.
 		].
 	].
 
@@ -191,7 +242,7 @@ MAGround >> pheromoneUpdate: aDictionary [
 MAGround >> positionChanged: aPoint for: aModelObject [
 
 	self childWithId: aModelObject componentName ifFound: [ :e |
-		e relocate: aModelObject position.
+		e relocate: (aModelObject position - (2@2)).
 	].
 ]
 

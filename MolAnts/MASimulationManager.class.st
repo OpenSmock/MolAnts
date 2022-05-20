@@ -21,6 +21,20 @@ MASimulationManager class >> consumedComponentEvents [
 	^ {TMAStageEvents . TMARoleEvents . TMAPositionEvents}
 ]
 
+{ #category : #scripts }
+MASimulationManager class >> pauseSimulation [
+	<script>
+	
+	self passivate.
+]
+
+{ #category : #scripts }
+MASimulationManager class >> playSimulation [
+	<script>
+	
+	self activate.
+]
+
 { #category : #properties }
 MASimulationManager class >> simulationAntHillPosition [
 
@@ -88,9 +102,6 @@ MASimulationManager >> componentActivate [
 	self getTMARoleEventsSubscriber subscribe: self.
 	self getTMAPositionEventsSubscriber subscribe: self.
 	
-	ground := MAGround start: 'Ground'.
-	ground forEvents: TMAPheromoneEvents addProducer: pheromones componentName.
-	
 	self start.
 ]
 
@@ -106,6 +117,9 @@ MASimulationManager >> componentInitialize [
 	nbAnt := 0.
 	insectsPos := Dictionary new.
 	pheromones := MAPheromones start: 'Pheromones'.
+	
+	ground := MAGround start: 'Ground'.
+	ground forEvents: TMAPheromoneEvents addProducer: pheromones componentName.
 ]
 
 { #category : #'component life cycle' }
@@ -496,6 +510,7 @@ MASimulationManager >> workerExploringPositionChanged: aPoint for: anAnt [
 
 { #category : #events }
 MASimulationManager >> workerReturningPositionChanged: aPoint for: anAnt [
-
+	
+	self getTMASimulationEventsNotifier pheromoneReturnNew: aPoint.
 	self getTMASimulationEventsNotifier positionChanged: aPoint for: anAnt.
 ]

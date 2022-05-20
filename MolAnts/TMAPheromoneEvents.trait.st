@@ -14,5 +14,17 @@ TMAPheromoneEvents >> pheromoneDead: aPoint [
 ]
 
 { #category : #events }
+TMAPheromoneEvents >> pheromoneReturnBorn: aPoint [
+]
+
+{ #category : #events }
+TMAPheromoneEvents >> pheromoneReturnDead: aPoint [
+]
+
+{ #category : #events }
+TMAPheromoneEvents >> pheromoneReturnUpdate: aDictionary [
+]
+
+{ #category : #events }
 TMAPheromoneEvents >> pheromoneUpdate: aDictionary [
 ]

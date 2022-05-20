@@ -2,7 +2,8 @@ Class {
 	#name : #MAWorker,
 	#superclass : #MARole,
 	#instVars : [
-		'phase'
+		'phase',
+		'oldPositions'
 	],
 	#category : #'MolAnts-Model'
 }
@@ -53,6 +54,8 @@ MAWorker >> doSimulationStepFor: anAnt [
 			(antRectangle intersects: insectRectangle) ifTrue: [
 				self getTMARoleEventsNotifier worker: anAnt eatAt: each.
 				phase := #retrunToAntHill.
+				oldPositions := OrderedCollection new.
+				oldPositions add: anAnt position.	
 				^ self.
 			].
 		].
@@ -67,6 +70,7 @@ MAWorker >> doSimulationStepFor: anAnt [
 		(antRectangle intersects: antHillRectangle) ifTrue: [
 			phase := #explorating.
 			self getTMARoleEventsNotifier workerDeliver: anAnt.
+			oldPositions := nil.
 			Transcript show:'WorkerDeliver'; cr.
 		].
 	].
@@ -82,10 +86,23 @@ MAWorker >> getPheromonesAround: anAnt [
 	pheromonesDict := anAnt getPheromonesDict.
 	pheromonesVisibles := OrderedCollection new.
 	pheromonesDict keysDo: [ :each | | pheromoneRectangle |
-		each = anAnt position ifFalse:[
-			pheromoneRectangle := BlBounds origin: (each) extent: (0@0).
-			(antRectangle intersects: pheromoneRectangle) ifTrue: [
-				pheromonesVisibles add: each.
+		oldPositions ifNil: [
+			each = anAnt position ifFalse:[
+				pheromoneRectangle := BlBounds origin: (each) extent: (0@0).
+				(antRectangle intersects: pheromoneRectangle) ifTrue: [
+					pheromonesVisibles add: each.
+				].
+			].
+		] ifNotNil:[ | test |
+			test := false.
+			oldPositions do: [ :each2 |
+				test := test | (each = each2).
+			].
+			test ifFalse:[
+				pheromoneRectangle := BlBounds origin: (each) extent: (0@0).
+				(antRectangle intersects: pheromoneRectangle) ifTrue: [
+					pheromonesVisibles add: each.
+				].
 			].
 		].
 	].
@@ -128,9 +145,16 @@ MAWorker >> moveFrom: anAnt [
 				newPos := self randomMove: anAnt.
 			].
 		].
-	
+
 		newPos := self newPositionCheckBorder: newPos.
+
+		oldPositions add: anAnt position.
+		oldPositions size > 10 ifTrue:[
+			oldPositions removeFirst.
+		].
+
 		self getTMARoleEventsNotifier workerReturningPositionChanged: newPos for: anAnt .
+
 		^ newPos.
 	].
 ]
@@ -170,6 +194,6 @@ MAWorker >> targetPheromones: aPheromoneOrderedCollection for: anAnt [
 	
 	randomPheromone := Random new nextIntegerBetween: 1 and: aPheromoneOrderedCollection size .
 	newPos := aPheromoneOrderedCollection at: randomPheromone.
-
+	
 	^ newPos.
 ]

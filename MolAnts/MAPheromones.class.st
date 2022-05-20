@@ -5,6 +5,7 @@ Class {
 	#classTraits : 'MolComponentImpl classTrait + TMAPheromonesType classTrait + TMASimulationEvents classTrait',
 	#instVars : [
 		'pheromonesDict',
+		'pheromonesReturnDict',
 		'compt'
 	],
 	#category : #'MolAnts-Model'
@@ -28,6 +29,7 @@ MAPheromones >> componentInitialize [
 	
 	
 	pheromonesDict := Dictionary new.
+	pheromonesReturnDict := Dictionary new.
 	compt := 0.
 ]
 
@@ -41,6 +43,7 @@ MAPheromones >> componentPassivate [
 MAPheromones >> componentRemove [
 
 	pheromonesDict := nil.
+	pheromonesReturnDict := nil.
 	compt := 0.
 ]
 
@@ -52,13 +55,22 @@ MAPheromones >> doSimulationStep [
 	pheromonesDict keysDo: [ :each | 
 		pheromonesDict at: each update: [ :v | v-1 ].
 		(pheromonesDict at: each) <= 0 ifTrue: [ 
-			self getTMAPheromoneEventsNotifier pheromoneDead: each.
 			pheromonesDict removeKey: each.
+			self getTMAPheromoneEventsNotifier pheromoneDead: each.
+		].
+	].
+
+	pheromonesReturnDict keysDo: [ :each | 
+		pheromonesReturnDict at: each update: [ :v | v-1 ].
+		(pheromonesReturnDict at: each) <= 0 ifTrue: [ 
+			pheromonesReturnDict removeKey: each.
+			self getTMAPheromoneEventsNotifier pheromoneReturnDead: each.
 		].
 	].
 	
 	(compt % 20 = 0) ifTrue: [
 		self getTMAPheromoneEventsNotifier pheromoneUpdate: pheromonesDict.
+		self getTMAPheromoneEventsNotifier pheromoneReturnUpdate: pheromonesReturnDict.
 	].
 ]
 
@@ -90,10 +102,29 @@ MAPheromones >> pheromoneNew: aPoint [
 		].
 ]
 
+{ #category : #'events - lifecycle' }
+MAPheromones >> pheromoneReturnNew: aPoint [
+
+		(pheromonesReturnDict includesKey: aPoint) ifFalse:[
+			pheromonesReturnDict add: (aPoint -> self class maxIntensity).
+			self getTMAPheromoneEventsNotifier pheromoneReturnBorn: aPoint.
+		] ifTrue: [
+			pheromonesReturnDict at: aPoint  update: [:v | v - v + self class maxIntensity].
+		].
+	
+
+]
+
 { #category : #accessing }
 MAPheromones >> pheromonesDict [
 
 	^ pheromonesDict
+]
+
+{ #category : #accessing }
+MAPheromones >> pheromonesReturnDict [
+
+	^ pheromonesReturnDict
 ]
 
 { #category : #'events - lifecycle' }

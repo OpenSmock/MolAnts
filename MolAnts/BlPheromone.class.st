@@ -3,7 +3,9 @@ Class {
 	#superclass : #BlElement,
 	#instVars : [
 		'location',
-		'intensity'
+		'intensity',
+		'type',
+		'needReDraw'
 	],
 	#category : #MolAnts
 }
@@ -31,12 +33,20 @@ ground addChild: pheromoneView.
 
 { #category : #drawing }
 BlPheromone >> drawOnSpartaCanvas: aCanvas [	
-
+	
+	type = #explore ifTrue: [ 
 	aCanvas figure
 		path: (aCanvas shape circleAt: location radius: 2);
 		background: Color blue;
 		backgroundAlpha: intensity;
-		draw
+		draw.
+	] ifFalse:[
+	aCanvas figure
+		path: (aCanvas shape circleAt: location radius: 2);
+		background: Color cyan;
+		backgroundAlpha: intensity;
+		draw.
+	].
 ]
 
 { #category : #drawing }
@@ -44,8 +54,10 @@ BlPheromone >> initialize [
 
 	super initialize.
 	
+	type := #explore.
 	location := 0@0.
 	intensity := 0.
+	needReDraw := true.
 ]
 
 { #category : #accessing }
@@ -73,6 +85,12 @@ BlPheromone >> location: anObject [
 ]
 
 { #category : #accessing }
+BlPheromone >> needReDraw: aBool [
+
+	needReDraw := aBool.
+]
+
+{ #category : #accessing }
 BlPheromone >> onSessionChanged: aNewSession [
 	"Is sent when a Session is changed, for example if the program is closed and re-opened.
 	When this happens the external heap memory (FFI Objects) is no longer valid.
@@ -80,4 +98,10 @@ BlPheromone >> onSessionChanged: aNewSession [
 	children ifNotNil:[
 		self childrenDo: [ :eachChild | eachChild onSessionChanged: aNewSession ]
 	].
+]
+
+{ #category : #drawing }
+BlPheromone >> type: aSymbol [
+
+	type := aSymbol.
 ]
