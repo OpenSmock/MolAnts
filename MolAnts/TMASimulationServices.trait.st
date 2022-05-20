@@ -13,6 +13,10 @@ TMASimulationServices >> getPheromonesDict [
 ]
 
 { #category : #services }
+TMASimulationServices >> getPheromonesReturnDict [
+]
+
+{ #category : #services }
 TMASimulationServices >> insectsPos [
 ]
 

@@ -67,6 +67,12 @@ MAAnt >> getInsects [
 ]
 
 { #category : #services }
+MAAnt >> getPheromoneOwnersDict [
+
+	^ self getTMASimulationServicesProvider getPheromoneOwnersDict.
+]
+
+{ #category : #services }
 MAAnt >> getPheromonesDict [
 
 	^ self getTMASimulationServicesProvider getPheromonesDict.

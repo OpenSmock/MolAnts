@@ -11,8 +11,8 @@ TMAPheromonesType classSide >> consumedComponentEvents [
 	^ {TMASimulationEvents}
 ]
 
-{ #category : #'accessing - events' }
-TMAPheromonesType classSide >> producedComponentEvents [
+{ #category : #'accessing - services' }
+TMAPheromonesType classSide >> providedComponentServices [
 	<componentContract>
-	^ {TMAPheromoneEvents} 
+	^ {TMAPheromoneServices} 
 ]

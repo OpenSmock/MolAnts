@@ -8,7 +8,7 @@ Class {
 	#category : #'MolAnts-Model'
 }
 
-{ #category : #role }
+{ #category : #position }
 MAWorker >> avoidPheromones: aPheromoneOrderedCollection for: anAnt [
 	
 	| newPos onTop onLeft randomPheromone |
@@ -33,65 +33,80 @@ MAWorker >> avoidPheromones: aPheromoneOrderedCollection for: anAnt [
 
 { #category : #'life cycle' }
 MAWorker >> componentInitialize [
-	"here write the code corresponding to component initialisation phase"
-	
+
 	roleName := #worker.
-	phase := #explorating.
+	phase := #explore.
+]
+
+{ #category : #role }
+MAWorker >> doSimulationStepExplore: anAnt [
+
+	| antRectangle insectsList |
+
+	antRectangle := BlBounds origin: ((anAnt position) - (5@5)) extent: (10@10).
+	
+	insectsList := anAnt getInsects.
+	
+	insectsList keysDo: [ :each | | insectRectangle |
+		insectRectangle := BlBounds origin: (each) extent: (0@0).
+		(antRectangle intersects: insectRectangle) ifTrue: [
+			self getTMARoleEventsNotifier worker: anAnt eatAt: each.
+			phase := #return.
+			oldPositions := OrderedCollection new.
+			oldPositions add: anAnt position.	
+			^ self.
+		].
+	].
 ]
 
 { #category : #role }
 MAWorker >> doSimulationStepFor: anAnt [
 
-	phase = #explorating ifTrue: [
-		| antRectangle insectsList |
-	
-		antRectangle := BlBounds origin: ((anAnt position) - (5@5)) extent: (10@10).
-	
-		insectsList := anAnt getInsects.
-	
-		insectsList keysDo: [ :each | | insectRectangle |
-			insectRectangle := BlBounds origin: (each) extent: (0@0).
-			(antRectangle intersects: insectRectangle) ifTrue: [
-				self getTMARoleEventsNotifier worker: anAnt eatAt: each.
-				phase := #retrunToAntHill.
-				oldPositions := OrderedCollection new.
-				oldPositions add: anAnt position.	
-				^ self.
-			].
-		].
+	phase = #explore ifTrue: [
+		self doSimulationStepExplore: anAnt.
 	].
 
-	phase = #retrunToAntHill ifTrue: [
-			
-		| antRectangle  antHillRectangle |
-			
-		antRectangle := BlBounds origin: ((anAnt position) - (10@10)) extent: (20@20).
-		antHillRectangle := BlBounds origin: MASimulationManager simulationAntHillPosition extent: (0@0).
-		(antRectangle intersects: antHillRectangle) ifTrue: [
-			phase := #explorating.
-			self getTMARoleEventsNotifier workerDeliver: anAnt.
-			oldPositions := nil.
-			Transcript show:'WorkerDeliver'; cr.
-		].
+	phase = #return ifTrue: [
+			self doSimulationStepReturn: anAnt.
 	].
 
 ]
 
 { #category : #role }
+MAWorker >> doSimulationStepReturn: anAnt [
+
+	| antRectangle  antHillRectangle |
+			
+	antRectangle := BlBounds origin: ((anAnt position) - (10@10)) extent: (20@20).
+	antHillRectangle := BlBounds origin: MASimulationManager simulationAntHillPosition extent: (0@0).
+	(antRectangle intersects: antHillRectangle) ifTrue: [
+		phase := #explore.
+		self getTMARoleEventsNotifier workerDeliver: anAnt.
+		oldPositions := nil.
+	].
+]
+
+{ #category : #position }
 MAWorker >> getPheromonesAround: anAnt [ 
 
-	| antRectangle pheromonesDict pheromonesVisibles |
+	| antRectangle pheromonesDict pheromoneOwnersDict othersPheromonesVisibles myPheromonesVisibles |
 			
 	antRectangle := BlBounds origin: ((anAnt position) - (5@5)) extent: (10@10).
 	pheromonesDict := anAnt getPheromonesDict.
-	pheromonesVisibles := OrderedCollection new.
+	pheromoneOwnersDict := anAnt getPheromoneOwnersDict.
+	myPheromonesVisibles := OrderedCollection new.
+	othersPheromonesVisibles := OrderedCollection new.
 	pheromonesDict keysDo: [ :each | | pheromoneRectangle |
 		oldPositions ifNil: [
 			each = anAnt position ifFalse:[
 				pheromoneRectangle := BlBounds origin: (each) extent: (0@0).
 				(antRectangle intersects: pheromoneRectangle) ifTrue: [
-					pheromonesVisibles add: each.
-				].
+					(pheromoneOwnersDict at: each) = anAnt ifTrue:[
+						myPheromonesVisibles add: each.
+					] ifFalse: [
+						othersPheromonesVisibles add: each.
+					].
+				].	
 			].
 		] ifNotNil:[ | test |
 			test := false.
@@ -101,20 +116,20 @@ MAWorker >> getPheromonesAround: anAnt [
 			test ifFalse:[
 				pheromoneRectangle := BlBounds origin: (each) extent: (0@0).
 				(antRectangle intersects: pheromoneRectangle) ifTrue: [
-					pheromonesVisibles add: each.
+					myPheromonesVisibles add: each.
 				].
 			].
 		].
 	].
-	^ pheromonesVisibles.
+	^ myPheromonesVisibles.
 ]
 
-{ #category : #role }
+{ #category : #position }
 MAWorker >> moveFrom: anAnt [
 	
 	| newPos |
 	
-	phase = #explorating ifTrue: [ | pheromonesVisibles |
+	phase = #explore ifTrue: [ | pheromonesVisibles |
 			
 		pheromonesVisibles := self getPheromonesAround: anAnt.
 	
@@ -132,7 +147,7 @@ MAWorker >> moveFrom: anAnt [
 		self getTMARoleEventsNotifier workerExploringPositionChanged: newPos for: anAnt.
 		^ newPos.
 	].
-	phase = #retrunToAntHill ifTrue: [ | pheromonesVisibles |
+	phase = #return ifTrue: [ | pheromonesVisibles |
 		
 		pheromonesVisibles := self getPheromonesAround: anAnt.
 	
@@ -159,7 +174,7 @@ MAWorker >> moveFrom: anAnt [
 	].
 ]
 
-{ #category : #role }
+{ #category : #position }
 MAWorker >> newPositionCheckBorder: aPoint [
 	"Check if the ant is in the ground. If not keep the ant on the ground."
 	| newPos |
@@ -181,13 +196,13 @@ MAWorker >> newPositionCheckBorder: aPoint [
 	^ newPos.
 ]
 
-{ #category : #role }
+{ #category : #position }
 MAWorker >> randomMove: anAnt [
 
 	^ (anAnt position) + ((((Random new nextIntegerBetween: 0 and: 6)-3) rounded) @ (((Random new nextIntegerBetween: 0 and: 6)-3) rounded)). 
 ]
 
-{ #category : #role }
+{ #category : #position }
 MAWorker >> targetPheromones: aPheromoneOrderedCollection for: anAnt [
 	
 	| newPos randomPheromone |

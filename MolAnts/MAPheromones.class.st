@@ -1,12 +1,13 @@
 Class {
 	#name : #MAPheromones,
 	#superclass : #Object,
-	#traits : 'MolComponentImpl + TMAPheromonesType + TMASimulationEvents',
-	#classTraits : 'MolComponentImpl classTrait + TMAPheromonesType classTrait + TMASimulationEvents classTrait',
+	#traits : 'MolComponentImpl + TMAPheromonesType + TMASimulationEvents + TMAPheromoneServices',
+	#classTraits : 'MolComponentImpl classTrait + TMAPheromonesType classTrait + TMASimulationEvents classTrait + TMAPheromoneServices classTrait',
 	#instVars : [
+		'maxIntensity',
 		'pheromonesDict',
-		'pheromonesReturnDict',
-		'compt'
+		'pheromoneOwnersDict',
+		'pheromonesReturnDict'
 	],
 	#category : #'MolAnts-Model'
 }
@@ -27,10 +28,10 @@ MAPheromones >> componentActivate [
 MAPheromones >> componentInitialize [
 	"here write the code corresponding to component initialisation phase"
 	
-	
+	maxIntensity := 100.
 	pheromonesDict := Dictionary new.
+	pheromoneOwnersDict := Dictionary new.
 	pheromonesReturnDict := Dictionary new.
-	compt := 0.
 ]
 
 { #category : #'life cycle' }
@@ -43,20 +44,18 @@ MAPheromones >> componentPassivate [
 MAPheromones >> componentRemove [
 
 	pheromonesDict := nil.
+	pheromoneOwnersDict := nil.
 	pheromonesReturnDict := nil.
-	compt := 0.
 ]
 
 { #category : #'events - lifecycle' }
 MAPheromones >> doSimulationStep [
 
-	compt := compt + 1.
-	
 	pheromonesDict keysDo: [ :each | 
 		pheromonesDict at: each update: [ :v | v-1 ].
 		(pheromonesDict at: each) <= 0 ifTrue: [ 
 			pheromonesDict removeKey: each.
-			self getTMAPheromoneEventsNotifier pheromoneDead: each.
+			pheromoneOwnersDict removeKey: each
 		].
 	].
 
@@ -64,19 +63,32 @@ MAPheromones >> doSimulationStep [
 		pheromonesReturnDict at: each update: [ :v | v-1 ].
 		(pheromonesReturnDict at: each) <= 0 ifTrue: [ 
 			pheromonesReturnDict removeKey: each.
-			self getTMAPheromoneEventsNotifier pheromoneReturnDead: each.
 		].
-	].
-	
-	(compt % 20 = 0) ifTrue: [
-		self getTMAPheromoneEventsNotifier pheromoneUpdate: pheromonesDict.
-		self getTMAPheromoneEventsNotifier pheromoneReturnUpdate: pheromonesReturnDict.
 	].
 ]
 
-{ #category : #'component accessing' }
-MAPheromones >> getTMAPheromoneEventsNotifier [
-	^self eventsNotifiers at: TMAPheromoneEvents ifAbsent: [^MolNotFoundEventsNotifier new interface: TMAPheromoneEvents name: nil].
+{ #category : #services }
+MAPheromones >> getMaxIntensity [
+
+	^ maxIntensity.
+]
+
+{ #category : #services }
+MAPheromones >> getPheromoneOwnersDict [
+
+	^ pheromoneOwnersDict .
+]
+
+{ #category : #services }
+MAPheromones >> getPheromonesDict [
+
+	^ pheromonesDict.
+]
+
+{ #category : #services }
+MAPheromones >> getPheromonesReturnDict [
+
+	^ pheromonesReturnDict
 ]
 
 { #category : #'component accessing' }
@@ -91,40 +103,28 @@ MAPheromones >> getTMASimulationEventsSubscriber [
 	^eventsSubscriber
 ]
 
-{ #category : #'events - lifecycle' }
-MAPheromones >> pheromoneNew: aPoint [
+{ #category : #events }
+MAPheromones >> pheromoneNew: aPoint for: anAnt [
 
 		(pheromonesDict includesKey: aPoint) ifFalse:[
-			pheromonesDict add: (aPoint -> self class maxIntensity).
-			self getTMAPheromoneEventsNotifier pheromoneBorn: aPoint.
+			pheromonesDict add: (aPoint -> maxIntensity).
+			pheromoneOwnersDict add: (aPoint -> anAnt).
 		] ifTrue: [
-			pheromonesDict at: aPoint  update: [:v | v - v + self class maxIntensity].
+			pheromonesDict at: aPoint  update: [:v | v - v + maxIntensity].
 		].
+	
 ]
 
-{ #category : #'events - lifecycle' }
-MAPheromones >> pheromoneReturnNew: aPoint [
+{ #category : #events }
+MAPheromones >> pheromoneReturnNew: aPoint for: anAnt [
 
 		(pheromonesReturnDict includesKey: aPoint) ifFalse:[
-			pheromonesReturnDict add: (aPoint -> self class maxIntensity).
-			self getTMAPheromoneEventsNotifier pheromoneReturnBorn: aPoint.
+			pheromonesReturnDict add: (aPoint -> maxIntensity).
 		] ifTrue: [
-			pheromonesReturnDict at: aPoint  update: [:v | v - v + self class maxIntensity].
+			pheromonesReturnDict at: aPoint  update: [:v | v - v + maxIntensity].
 		].
 	
 
-]
-
-{ #category : #accessing }
-MAPheromones >> pheromonesDict [
-
-	^ pheromonesDict
-]
-
-{ #category : #accessing }
-MAPheromones >> pheromonesReturnDict [
-
-	^ pheromonesReturnDict
 ]
 
 { #category : #'events - lifecycle' }

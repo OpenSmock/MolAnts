@@ -1,19 +1,14 @@
 Class {
 	#name : #MAGround,
 	#superclass : #BlElement,
-	#traits : 'MolComponentImpl + TMAGroundType + TMASimulationEvents + TMAPheromoneEvents',
-	#classTraits : 'MolComponentImpl classTrait + TMAGroundType classTrait + TMASimulationEvents classTrait + TMAPheromoneEvents classTrait',
+	#traits : 'MolComponentImpl + TMAGroundType + TMASimulationEvents',
+	#classTraits : 'MolComponentImpl classTrait + TMAGroundType classTrait + TMASimulationEvents classTrait',
 	#instVars : [
-		'mySpace'
+		'mySpace',
+		'compt'
 	],
 	#category : #'MolAnts-View'
 }
-
-{ #category : #'accessing - events' }
-MAGround class >> consumedComponentEvents [
-	<componentContract>
-	^ {TMASimulationEvents . TMAPheromoneEvents}
-]
 
 { #category : #'events - lifecycle' }
 MAGround >> ant: aModelObject changeRole: aSymbol [
@@ -72,50 +67,74 @@ MAGround >> antDead: anAnt [
 
 { #category : #'life cycle' }
 MAGround >> componentActivate [
-
-	| antHillView |
 	
 	self getTMASimulationEventsSubscriber subscribe: self.
-	self getTMAPheromoneEventsSubscriber subscribe: self.
 	
 	mySpace := self openInNewSpace extent: (MASimulationManager simulationWidth + 5)@(MASimulationManager simulationWidth + 5).
 	
-
-	antHillView := BlElement new.
-	antHillView id: 'antHill' asSymbol.
-	antHillView geometry: BlCircleGeometry new.
-	antHillView background: Color white.
-	antHillView relocate: (MASimulationManager simulationAntHillPosition - (10@10)).
-	antHillView size: 20@20.
-	antHillView zIndex: 0.
-	self addChild: antHillView.
+	compt := 0.
 ]
 
 { #category : #'life cycle' }
 MAGround >> componentPassivate [
 	
 	self getTMASimulationEventsSubscriber unsubscribe: self.
-	self getTMAPheromoneEventsSubscriber unsubscribe: self.
 ]
 
 { #category : #'life cycle' }
 MAGround >> componentRemove [
-	"here write the code corresponding to component remove phase"
 	
+	compt := 0.
 	self stopped.
-	mySpace close.
+	mySpace ifNotNil:[
+		mySpace close.
+	].
+]
+
+{ #category : #drawing }
+MAGround >> drawMeAndChildrenOnSpartaCanvas: aCanvas [
+	self drawOnSpartaCanvas: aCanvas.
+	(compt % 10) = 0 ifTrue:[
+		self drawChildrenOnSpartaCanvas: aCanvas.
+	].
+]
+
+{ #category : #drawing }
+MAGround >> drawOnSpartaCanvas: aCanvas [
+	
+	super drawOnSpartaCanvas: aCanvas.
+	
+	aCanvas figure
+		path: (aCanvas shape circleAt: MASimulationManager simulationAntHillPosition radius: 10);
+		background: Color white;
+		draw.
+	
+	self getTMAPheromoneServicesProvider getPheromonesDict keysAndValuesDo: [ :k :v |
+		aCanvas figure
+			path: (aCanvas shape circleAt: k radius: 2);
+			background: Color blue;
+			backgroundAlpha: (v/self getTMAPheromoneServicesProvider getMaxIntensity);
+			draw.
+	].
+	self getTMAPheromoneServicesProvider getPheromonesReturnDict keysAndValuesDo: [ :k :v | 
+		aCanvas figure
+			path: (aCanvas shape circleAt: k radius: 2);
+			background: Color cyan;
+			backgroundAlpha: (v/self getTMAPheromoneServicesProvider getMaxIntensity);
+			draw.
+	].
 ]
 
 { #category : #'component accessing' }
-MAGround >> getTMAPheromoneEventsSubscriber [
-	| eventsSymbol eventsSubscriber itf |
-	itf := TMAPheromoneEvents.
-	eventsSymbol := self eventsSubscribers at: itf ifAbsent: [^MolNotFoundEventsSubscriber new interface: itf name: nil].
-	eventsSymbol isCollection
+MAGround >> getTMAPheromoneServicesProvider [
+	| servicesSymbol servicesProvider itf |
+	itf := TMAPheromoneServices.
+	servicesSymbol := self servicesProviders at: itf ifAbsent: [^MolNotFoundServicesProvider new interface: itf name: nil].
+	servicesSymbol isSymbol
 	 	ifTrue: 
-			[eventsSubscriber := MolComponentManager default locatorServices 
-						searchEventsSubscriberFor: TMAPheromoneEvents named: eventsSymbol ]. 
-	^eventsSubscriber
+			[servicesProvider := MolComponentManager default locatorServices 
+						searchServicesProviderFor: TMAPheromoneServices named: servicesSymbol]. 
+	^servicesProvider
 ]
 
 { #category : #'component accessing' }
@@ -173,77 +192,17 @@ MAGround >> insectEated: anInsect [
 ]
 
 { #category : #events }
-MAGround >> pheromoneBorn: aPoint [
-
-	| pheromoneView |
-	
-	pheromoneView := BlPheromone new.
-	pheromoneView id:(aPoint x printString, #@ , aPoint y printString) asSymbol.
-	pheromoneView intensity: 1.0.
-	pheromoneView location: aPoint.
-	self addChild: pheromoneView.
-]
-
-{ #category : #events }
-MAGround >> pheromoneDead: aPoint [
-
-	self childWithId: ((aPoint x printString , #@ , aPoint y printString) asSymbol) ifFound: [ :e |
-		self removeChild: e.
-	].
-]
-
-{ #category : #events }
-MAGround >> pheromoneReturnBorn: aPoint [
-
-	| pheromoneReturnView |
-	
-	pheromoneReturnView := BlPheromone new.
-	pheromoneReturnView type: #return.
-	pheromoneReturnView id:('return', aPoint x printString, #@ , aPoint y printString) asSymbol.
-	pheromoneReturnView intensity: 1.0.
-	pheromoneReturnView location: aPoint.
-	self addChild: pheromoneReturnView.
-]
-
-{ #category : #events }
-MAGround >> pheromoneReturnDead: aPoint [
-
-	self childWithId: (('return', aPoint x printString , #@ , aPoint y printString) asSymbol) ifFound: [ :e |
-		self removeChild: e.
-	].
-]
-
-{ #category : #events }
-MAGround >> pheromoneReturnUpdate: aDictionary [
-
-	aDictionary keysDo: [ :each | 
-		self childWithId: (('return', each x printString , #@ , each y printString) asSymbol) ifFound: [ :e |
-			e intensity: ((aDictionary at: each)/MAPheromones maxIntensity).	 
-		].
-	].
-
-
-]
-
-{ #category : #events }
-MAGround >> pheromoneUpdate: aDictionary [
-
-	aDictionary keysDo: [ :each | 
-		self childWithId: ((each x printString , #@ , each y printString) asSymbol) ifFound: [ :e |
-			e intensity: ((aDictionary at: each)/MAPheromones maxIntensity).	
-			e needReDraw: true.
-		].
-	].
-
-
-]
-
-{ #category : #events }
 MAGround >> positionChanged: aPoint for: aModelObject [
 
 	self childWithId: aModelObject componentName ifFound: [ :e |
 		e relocate: (aModelObject position - (2@2)).
 	].
+]
+
+{ #category : #'events - lifecycle' }
+MAGround >> simulationStepSent [
+
+	compt := compt + 1.
 ]
 
 { #category : #'events - control' }

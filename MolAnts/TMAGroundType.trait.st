@@ -8,5 +8,11 @@ Trait {
 { #category : #'accessing - events' }
 TMAGroundType classSide >> consumedComponentEvents [
 	<componentContract>
-	^ {TMASimulationEvents. TMAPheromoneEvents}
+	^ {TMASimulationEvents}
+]
+
+{ #category : #'accessing - services' }
+TMAGroundType classSide >> usedComponentServices [
+	<componentContract>
+	^ {TMAPheromoneServices}
 ]

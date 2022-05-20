@@ -38,11 +38,11 @@ TMASimulationEvents >> paused [
 ]
 
 { #category : #'events - lifecycle' }
-TMASimulationEvents >> pheromoneNew: aPoint [
+TMASimulationEvents >> pheromoneNew: aPoint for: anAnt [
 ]
 
 { #category : #'events - lifecycle' }
-TMASimulationEvents >> pheromoneReturnNew: aPoint [
+TMASimulationEvents >> pheromoneReturnNew: aPoint for: anAnt [
 ]
 
 { #category : #events }

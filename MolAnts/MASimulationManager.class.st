@@ -116,10 +116,11 @@ MASimulationManager >> componentInitialize [
 	isInsectsCreated := false.
 	nbAnt := 0.
 	insectsPos := Dictionary new.
+	
 	pheromones := MAPheromones start: 'Pheromones'.
 	
 	ground := MAGround start: 'Ground'.
-	ground forEvents: TMAPheromoneEvents addProducer: pheromones componentName.
+	ground forServices: TMAPheromoneServices useProvider: (pheromones componentName asSymbol) asSymbol.
 ]
 
 { #category : #'component life cycle' }
@@ -212,34 +213,22 @@ MASimulationManager >> createInsects [
 	
 ]
 
-{ #category : #private }
-MASimulationManager >> createPheromone: aPoint [
-	
-	"
-	| name pheromone |
+{ #category : #services }
+MASimulationManager >> getPheromoneOwnersDict [
 
-		(pheromonesPos includesKey: aPoint) ifFalse:[ 
-			nbPheromone := nbPheromone + 1.
-			name := ('Pheromone', nbPheromone printString) asSymbol.
-			pheromone := MAPheromone start: name.
-			pheromone position: aPoint.
-			pheromonesPos add: (aPoint -> pheromone ).
-			
-			self forEvents: TMAPheromoneEvents addProducer: name.
-			
-			self getTMASimulationEventsNotifier pheromoneBorn: pheromone.
-		] ifTrue: [
-			(pheromonesPos at: aPoint) addIntensity.
-		].
-	"
-	
-	self getTMASimulationEventsNotifier pheromoneBorn: aPoint.
+	^ pheromones getPheromoneOwnersDict.
 ]
 
 { #category : #services }
 MASimulationManager >> getPheromonesDict [
 
-	^ pheromones pheromonesDict.
+	^ pheromones getPheromonesDict.
+]
+
+{ #category : #services }
+MASimulationManager >> getPheromonesReturnDict [
+
+	^ pheromones getPheromonesReturnDict.
 ]
 
 { #category : #'component accessing' }
@@ -504,13 +493,13 @@ MASimulationManager >> workerDeliver: anAnt [
 { #category : #events }
 MASimulationManager >> workerExploringPositionChanged: aPoint for: anAnt [
 
-	self getTMASimulationEventsNotifier pheromoneNew: aPoint.
+	self getTMASimulationEventsNotifier pheromoneNew: aPoint for: anAnt.
 	self getTMASimulationEventsNotifier positionChanged: aPoint for: anAnt.
 ]
 
 { #category : #events }
 MASimulationManager >> workerReturningPositionChanged: aPoint for: anAnt [
 	
-	self getTMASimulationEventsNotifier pheromoneReturnNew: aPoint.
+	self getTMASimulationEventsNotifier pheromoneReturnNew: aPoint for: anAnt.
 	self getTMASimulationEventsNotifier positionChanged: aPoint for: anAnt.
 ]
