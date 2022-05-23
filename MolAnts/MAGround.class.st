@@ -93,36 +93,44 @@ MAGround >> componentRemove [
 
 { #category : #drawing }
 MAGround >> drawMeAndChildrenOnSpartaCanvas: aCanvas [
+
 	self drawOnSpartaCanvas: aCanvas.
-	(compt % 10) = 0 ifTrue:[
-		self drawChildrenOnSpartaCanvas: aCanvas.
-	].
+	compt ifNotNil: [ 
+		compt % 10 = 0 ifTrue: [ self drawChildrenOnSpartaCanvas: aCanvas ] ]
 ]
 
 { #category : #drawing }
 MAGround >> drawOnSpartaCanvas: aCanvas [
-	
+
 	super drawOnSpartaCanvas: aCanvas.
-	
+
 	aCanvas figure
-		path: (aCanvas shape circleAt: MASimulationManager simulationAntHillPosition radius: 10);
+		path: (aCanvas shape
+				 circleAt: MASimulationManager simulationAntHillPosition
+				 radius: 10);
 		background: Color white;
 		draw.
-	
-	self getTMAPheromoneServicesProvider getPheromonesDict keysAndValuesDo: [ :k :v |
-		aCanvas figure
-			path: (aCanvas shape circleAt: k radius: 2);
-			background: Color blue;
-			backgroundAlpha: (v/self getTMAPheromoneServicesProvider getMaxIntensity);
-			draw.
-	].
-	self getTMAPheromoneServicesProvider getPheromonesReturnDict keysAndValuesDo: [ :k :v | 
-		aCanvas figure
-			path: (aCanvas shape circleAt: k radius: 2);
-			background: Color cyan;
-			backgroundAlpha: (v/self getTMAPheromoneServicesProvider getMaxIntensity);
-			draw.
-	].
+
+	self getTMAPheromoneServicesProvider getPheromonesDict ifNotNil: [ 
+		self getTMAPheromoneServicesProvider getPheromonesDict 
+			keysAndValuesDo: [ :k :v | 
+				aCanvas figure
+					path: (aCanvas shape circleAt: k radius: 2);
+					background: Color blue;
+					backgroundAlpha:
+						v / self getTMAPheromoneServicesProvider getMaxIntensity;
+					draw ] ].
+
+	self getTMAPheromoneServicesProvider getPheromonesReturnDict 
+		ifNotNil: [ 
+			self getTMAPheromoneServicesProvider getPheromonesReturnDict 
+				keysAndValuesDo: [ :k :v | 
+					aCanvas figure
+						path: (aCanvas shape circleAt: k radius: 2);
+						background: Color cyan;
+						backgroundAlpha:
+							v / self getTMAPheromoneServicesProvider getMaxIntensity;
+						draw ] ]
 ]
 
 { #category : #'component accessing' }
