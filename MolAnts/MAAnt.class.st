@@ -78,6 +78,12 @@ MAAnt >> getPheromonesDict [
 	^ self getTMASimulationServicesProvider getPheromonesDict.
 ]
 
+{ #category : #accessing }
+MAAnt >> getRoleName [
+
+	^ self getTMAStageServicesProvider getRoleName.
+]
+
 { #category : #'component accessing' }
 MAAnt >> getTMASimulationEventsSubscriber [
 	| eventsSymbol eventsSubscriber itf |

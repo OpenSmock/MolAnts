@@ -14,5 +14,5 @@ TMAGroundType classSide >> consumedComponentEvents [
 { #category : #'accessing - services' }
 TMAGroundType classSide >> usedComponentServices [
 	<componentContract>
-	^ {TMAPheromoneServices}
+	^ {TMAPheromoneServices . TMASimulationServices}
 ]

@@ -22,10 +22,6 @@ TMARoleEvents >> worker: anAnt eatAt: aPoint [
 ]
 
 { #category : #events }
-TMARoleEvents >> workerDeliver: anAnt [
-]
-
-{ #category : #events }
 TMARoleEvents >> workerExploringPositionChanged: aPoint for: anAnt [
 ]
 

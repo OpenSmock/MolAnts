@@ -42,35 +42,17 @@ MAGround >> ant: aModelObject changeStage: aSymbol [
 	].
 ]
 
-{ #category : #'events - lifecycle' }
-MAGround >> antBorn: anAnt [
-
-	| antView |
-	antView := BlElement new.
-	antView id: anAnt componentName.
-	antView geometry: BlCircleGeometry new.
-	antView background: Color purple.
-	antView relocate: (anAnt position - (1@1)).
-	antView size: 2@2.
-	antView zIndex: 3.
-	self addChild: antView.
-]
-
-{ #category : #'events - lifecycle' }
-MAGround >> antDead: anAnt [
-
-	self childWithId: anAnt componentName ifFound: [ :e |
-		self removeChild: e.	
-	].
-
-]
-
 { #category : #'life cycle' }
 MAGround >> componentActivate [
 	
 	self getTMASimulationEventsSubscriber subscribe: self.
+
+]
+
+{ #category : #'life cycle' }
+MAGround >> componentInitialize [
 	
-	mySpace := self openInNewSpace extent: (MASimulationManager simulationWidth + 5)@(MASimulationManager simulationWidth + 5).
+	mySpace := self openInNewSpace extent: (MASimulationManager simulationWidth + 5)@(MASimulationManager simulationHeight + 5 + 100).
 	
 	compt := 0.
 ]
@@ -95,8 +77,7 @@ MAGround >> componentRemove [
 MAGround >> drawMeAndChildrenOnSpartaCanvas: aCanvas [
 
 	self drawOnSpartaCanvas: aCanvas.
-	compt ifNotNil: [ 
-		compt % 10 = 0 ifTrue: [ self drawChildrenOnSpartaCanvas: aCanvas ] ]
+	self drawChildrenOnSpartaCanvas: aCanvas
 ]
 
 { #category : #drawing }
@@ -107,7 +88,7 @@ MAGround >> drawOnSpartaCanvas: aCanvas [
 	aCanvas figure
 		path: (aCanvas shape
 				 circleAt: MASimulationManager simulationAntHillPosition
-				 radius: 10);
+				 radius: 20);
 		background: Color white;
 		draw.
 
@@ -130,7 +111,50 @@ MAGround >> drawOnSpartaCanvas: aCanvas [
 						background: Color cyan;
 						backgroundAlpha:
 							v / self getTMAPheromoneServicesProvider getMaxIntensity;
-						draw ] ]
+						draw ] ].
+
+	self getInsects ifNotNil: [ 
+		self getInsects keysAndValuesDo: [ :k :v | 
+			aCanvas figure
+				path: (aCanvas shape circleAt: k radius: 2);
+				background: Color black;
+				backgroundAlpha: 1;
+				draw ] ].
+		
+	self getAnts ifNotNil: [ 
+		self getAnts  do: [ :ant | 
+			
+			ant getRoleName = #queen ifTrue: [ 
+				aCanvas figure
+					path: (aCanvas shape circleAt: (ant position) radius: 5);
+					background: Color pink;
+					backgroundAlpha: 1;
+					draw ] .
+			ant getRoleName = #worker ifTrue: [ 
+				aCanvas figure
+					path: (aCanvas shape circleAt: (ant position) radius: 3);
+					background: Color orange;
+					backgroundAlpha: 1;
+					draw ].
+			ant getRoleName = #fighter ifTrue: [ 
+				aCanvas figure
+					path: (aCanvas shape circleAt: (ant position) radius: 3);
+					background: Color green;
+					backgroundAlpha: 1;
+					draw ]
+			] ] 
+]
+
+{ #category : #services }
+MAGround >> getAnts [
+
+	^ self getTMASimulationServicesProvider ants. 
+]
+
+{ #category : #services }
+MAGround >> getInsects [
+
+	^ self getTMASimulationServicesProvider insectsPos. 
 ]
 
 { #category : #'component accessing' }
@@ -157,46 +181,26 @@ MAGround >> getTMASimulationEventsSubscriber [
 	^eventsSubscriber
 ]
 
+{ #category : #'component accessing' }
+MAGround >> getTMASimulationServicesProvider [
+	| servicesSymbol servicesProvider itf |
+	itf := TMASimulationServices.
+	servicesSymbol := self servicesProviders at: itf ifAbsent: [^MolNotFoundServicesProvider new interface: itf name: nil].
+	servicesSymbol isSymbol
+	 	ifTrue: 
+			[servicesProvider := MolComponentManager default locatorServices 
+						searchServicesProviderFor: TMASimulationServices named: servicesSymbol]. 
+	^servicesProvider
+]
+
 { #category : #initialization }
 MAGround >> initialize [ 
 
 	super initialize.
-	self constraintsDo:[ :c | 
-			c horizontal matchParent. 
-			c vertical matchParent 
-	].
+	self size: (MASimulationManager simulationWidth + 5)@(MASimulationManager simulationHeight + 5).
+	
+
 	self background: (Color fromHexString: 'c7baae').
-]
-
-{ #category : #'events - lifecycle' }
-MAGround >> insectBorn: anInsect [
-
-	| inscetView |
-	inscetView := BlElement new.
-	inscetView id: anInsect componentName.
-	inscetView geometry: BlCircleGeometry new.
-	inscetView background: Color black.
-	inscetView relocate: (anInsect position - (2@2)).
-	inscetView size: 4@4.
-	inscetView zIndex: 2.
-	self addChild: inscetView.
-]
-
-{ #category : #'events - lifecycle' }
-MAGround >> insectDead: anInsect [
-
-	self childWithId: anInsect componentName ifFound: [ :e |
-		e background: Color red.	
-	].
-
-]
-
-{ #category : #'events - lifecycle' }
-MAGround >> insectEated: anInsect [
-
-	self childWithId: anInsect componentName ifFound: [ :e |
-		self removeChild: e.	
-	].
 ]
 
 { #category : #events }
@@ -211,20 +215,13 @@ MAGround >> positionChanged: aPoint for: aModelObject [
 MAGround >> simulationStepSent [
 
 	compt := compt + 1.
+	compt % 5 = 0 ifTrue: [ self opacity: 1 ]
 ]
 
 { #category : #'events - control' }
 MAGround >> stopped [
 
 	self removeChildren 	
-]
-
-{ #category : #'events - lifecycle' }
-MAGround >> workerDeliver: anAnt [
-
-	self childWithId: anAnt componentName ifFound: [ :e |
-		e background: (Color fromHexString: '#DFFF00').	
-	].
 ]
 
 { #category : #'events - lifecycle' }

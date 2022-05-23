@@ -13,26 +13,6 @@ TMASimulationEvents >> ant: aModelObject changeRole: aSymbol [
 TMASimulationEvents >> ant: aModelObject changeStage: aSymbol [
 ]
 
-{ #category : #'events - lifecycle' }
-TMASimulationEvents >> antBorn: anAnt [
-]
-
-{ #category : #'events - lifecycle' }
-TMASimulationEvents >> antDead: anAnt [
-]
-
-{ #category : #'events - lifecycle' }
-TMASimulationEvents >> insectBorn: anInsect [
-]
-
-{ #category : #'events - lifecycle' }
-TMASimulationEvents >> insectDead: anInsect [
-]
-
-{ #category : #'events - lifecycle' }
-TMASimulationEvents >> insectEated: anInsect [
-]
-
 { #category : #'events - control' }
 TMASimulationEvents >> paused [
 ]
@@ -59,10 +39,6 @@ TMASimulationEvents >> started [
 
 { #category : #'events - control' }
 TMASimulationEvents >> stopped [
-]
-
-{ #category : #'events - lifecycle' }
-TMASimulationEvents >> workerDeliver: anAnt [
 ]
 
 { #category : #'events - lifecycle' }

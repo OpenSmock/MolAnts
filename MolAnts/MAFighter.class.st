@@ -14,7 +14,7 @@ MAFighter >> componentInitialize [
 { #category : #role }
 MAFighter >> doSimulationStepFor: anAnt [
 
-	| antRectangle insectsList |
+	"| antRectangle insectsList |
 	
 	antRectangle := BlBounds origin: ((anAnt position) - (10@10)) extent: (20@20).
 	
@@ -25,7 +25,7 @@ MAFighter >> doSimulationStepFor: anAnt [
 		(antRectangle intersects: insectRectangle) ifTrue: [
 			self getTMARoleEventsNotifier ant: anAnt eatAt: each. 
 		].
-	].
+	]."
 ]
 
 { #category : #role }

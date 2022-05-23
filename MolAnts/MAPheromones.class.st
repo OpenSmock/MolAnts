@@ -15,7 +15,7 @@ Class {
 { #category : #accessing }
 MAPheromones class >> maxIntensity [
 
-	^ 200.
+	^ 300.
 ]
 
 { #category : #'life cycle' }

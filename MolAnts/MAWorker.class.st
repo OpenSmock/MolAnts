@@ -77,11 +77,10 @@ MAWorker >> doSimulationStepReturn: anAnt [
 
 	| antRectangle  antHillRectangle |
 			
-	antRectangle := BlBounds origin: ((anAnt position) - (10@10)) extent: (20@20).
+	antRectangle := BlBounds origin: ((anAnt position) - (20@20)) extent: (40@40).
 	antHillRectangle := BlBounds origin: MASimulationManager simulationAntHillPosition extent: (0@0).
 	(antRectangle intersects: antHillRectangle) ifTrue: [
 		phase := #explore.
-		self getTMARoleEventsNotifier workerDeliver: anAnt.
 		oldPositions := nil.
 	].
 ]

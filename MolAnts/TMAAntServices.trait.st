@@ -9,6 +9,10 @@ Trait {
 }
 
 { #category : #services }
+TMAAntServices >> getRoleName [
+]
+
+{ #category : #services }
 TMAAntServices >> getStage [
 
 	^ self getTMAStageServicesProvider 
